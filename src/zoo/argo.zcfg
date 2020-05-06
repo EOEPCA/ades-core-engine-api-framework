@@ -1,0 +1,42 @@
+[argo]
+	Title = Eoepca Deploy Process
+	Abstract = argo test 1.0
+	processVersion = 1.0.0
+	storeSupported = true
+	statusSupported = true
+	serviceType = C
+	serviceProvider = argo.zo
+<DataInputs>
+	[input1]
+	Title = The input1
+	Abstract = the input1
+	minOccurs = 1
+	maxOccurs = 1
+	<ComplexData>
+		<Default>
+			mimeType = application/atom+xml
+		</Default>
+		<Supported>
+			MimeType = application/atom+xml
+		</Supported>
+	</ComplexData>
+</DataInputs>
+
+<DataOutputs>
+    [result_osd]
+    Title = OpenSearch Description to the Results
+    Abstract = OpenSearch Description to the Results
+<ComplexOutput>
+    <Default>
+                MimeType = application/opensearchdescription+xml
+    </Default>
+    <Supported>
+            MimeType = application/opensearchdescription+xml
+    </Supported>
+</ComplexOutput>
+</DataOutputs>
+
+
+
+
+
