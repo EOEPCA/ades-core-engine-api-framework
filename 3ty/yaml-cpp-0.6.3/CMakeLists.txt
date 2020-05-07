@@ -4,6 +4,7 @@
 # see http://www.cmake.org/Wiki/CMake_Policies
 cmake_minimum_required(VERSION 3.1)
 
+set(CMAKE_CXX_FLAGS "-fPIC")
 include(CheckCXXCompilerFlag)
 
 ###
