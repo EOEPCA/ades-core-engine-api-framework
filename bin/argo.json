@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "id": "input1",
+      "id": "input_string",
       "input": {
         "format": {
           "mimeType": "application/xml"

@@ -7,9 +7,9 @@
 	serviceType = C
 	serviceProvider = argo.zo
 <DataInputs>
-	[input1]
+	[input_string]
 	Title = The input1
-	Abstract = the input1
+	Abstract = the input_string
 	minOccurs = 1
 	maxOccurs = 1
 	<ComplexData>

@@ -56,6 +56,13 @@ private:
 };
 
 class ArgoInterface : protected mods::IModInterface {
+
+public:
+    struct ArgoWorkflowConfig{
+      std::string uri{""};
+    };
+
+
 public:
   ArgoInterface() = delete;
   explicit ArgoInterface(const std::string &path)
@@ -64,7 +71,7 @@ public:
 
     setValid(true);
 
-    start = (int (*)(const std::string &cwlContent,
+    start = (int (*)(ArgoWorkflowConfig& awConfig,const std::string &cwlContent,
                      std::list<std::pair<std::string, std::string>> &inputList,
                      const std::string &uuidBaseID, const std::string &runId,
                      std::string &id))dlsym(handle, "start");
@@ -73,14 +80,14 @@ public:
       return;
     }
 
-    getStatus = (int (*)(const std::string &argoWorkfloId, int &percent,
+    getStatus = (int (*)(ArgoWorkflowConfig& awConfig,const std::string &argoWorkfloId, int &percent,
                           std::string &message))dlsym(handle, "getStatus");
     if (!getStatus) {
       setValid(false);
       return;
     }
     getResults =
-        (void (*)(const std::string &argoWorkfloId,
+        (void (*)(ArgoWorkflowConfig& awConfig,const std::string &argoWorkfloId,
                   std::list<std::pair<std::string, std::string>> &outPutList))
             dlsym(handle, "getResults");
     if (!getResults) {
@@ -106,7 +113,7 @@ public:
    * @param id argoWorkflow complateID
    * @return 0 ok  >0 notOk
    */
-  int (*start)(const std::string &cwlContent,
+  int (*start)(ArgoWorkflowConfig& awConfig,const std::string &cwlContent,
             std::list<std::pair<std::string, std::string>> &inputList,
             const std::string &uuidBaseID, const std::string &runId,
             std::string &id);
@@ -118,9 +125,9 @@ public:
    * @param message
    * @return 0 continue >0 stop
    */
-  int (*getStatus)(const std::string &argoWorkfloId, int &percent,
+  int (*getStatus)(ArgoWorkflowConfig& awConfig,const std::string &argoWorkfloId, int &percent,
                  std::string &message);
-  void (*getResults)(const std::string &argoWorkfloId,
+  void (*getResults)(ArgoWorkflowConfig& awConfig,const std::string &argoWorkfloId,
                   std::list<std::pair<std::string, std::string>> &outPutList);
 };
 
