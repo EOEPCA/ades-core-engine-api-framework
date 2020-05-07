@@ -1,7 +1,7 @@
 #include "service.h"
 #include "service_internal.h"
 
-#include <argo/zooargo.hpp>
+#include "zooargo.hpp"
 
 #include <cstdlib>
 #include <cstring>
