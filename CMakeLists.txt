@@ -27,7 +27,7 @@ SET(MODS_LIBS
 set(src_main src/main.cpp
         src/zoo/zooargo.hpp)
 
-set(LIB_SRC  src/zoo/zooargo.hpp
+set(LIB_SRC
         src/zoo/argolib.cpp
         )
 

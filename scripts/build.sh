@@ -40,9 +40,6 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-
-exit;
-
 HERE=$PWD
 cd build/3ty/proc-comm-zoo/proc-comm-zoo/
 chmod +x ./scripts/build.sh

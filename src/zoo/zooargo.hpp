@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 #include <list>
 #include <utility>
@@ -77,6 +78,7 @@ public:
                      const std::string &uuidBaseID, const std::string &runId,
                      std::string &id))dlsym(handle, "start");
     if (!start) {
+      std::cerr << "start\n";
       setValid(false);
       return;
     }
@@ -85,6 +87,7 @@ public:
                           std::string &message))dlsym(handle, "getStatus");
     if (!getStatus) {
       setValid(false);
+      std::cerr << "getStatus\n";
       return;
     }
     getResults =
@@ -92,6 +95,7 @@ public:
                   std::list<std::pair<std::string, std::string>> &outPutList))
             dlsym(handle, "getResults");
     if (!getResults) {
+      std::cerr << "getResults\n";
       setValid(false);
       return;
     }

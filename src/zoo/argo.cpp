@@ -238,6 +238,11 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
     std::map<std::string, std::string> lenv;
     getConfigurationFromZooMapConfig(conf, "lenv", lenv);
 
+    if (confEoepca["libeoepcaargo"].empty()) {
+      setStatus(conf, "failed", "eoepca configuration libeoepcaargo.so empty");
+      return SERVICE_FAILED;
+    }
+
     if (confEoepca["libargo"].empty()) {
       setStatus(conf, "failed", "eoepca configuration libargo.so empty");
       return SERVICE_FAILED;
@@ -250,12 +255,16 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
 
     auto argoConfig = std::make_unique<mods::ArgoInterface::ArgoWorkflowConfig>();
     argoConfig->uri = confEoepca["argopath"];
+    argoConfig->eoepcaargoPath=confEoepca["libeoepcaargo"];
 
     auto argoInterface =
         std::make_unique<mods::ArgoInterface>(confEoepca["libargo"]);
+
     if (!argoInterface->IsValid()) {
 
-      std::string err("The library ");
+      fflush(stderr);
+
+      std::string err("szzzThe library ");
       err.append(confEoepca["libargo"]);
       err.append(" is not valid!");
       setStatus(conf, "failed", err.c_str());
