@@ -22,6 +22,8 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
+docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaargo proc_comm_lib_cwl
+
 HERE=$PWD
 cd build/3ty/proc-comm-zoo/proc-comm-zoo/
 chmod +x ./scripts/build.sh
