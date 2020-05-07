@@ -4,6 +4,6 @@ COPY assets/main.cfg /opt/t2service/main.cfg
 COPY assets/oas.cfg /opt/t2service/oas.cfg
 
 COPY src/zoo /tmp/zoo
-RUN cd /tmp/zoo && make && make install
+RUN cd /tmp/zoo && make && make install && rm -fvR /tmp/zoo
 
 #sudo docker run --rm  -d --name zoo -p 7777:80 eoepca-ades:1.0
