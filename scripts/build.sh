@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-rm -f build
+#rm -fvR build
 
 if [ -z "${BUILDER_DOCKERIMAGE}" ]; then
   BUILDER_DOCKERIMAGE='eoepca/eoepca-build-cpp:1.0'
@@ -22,17 +22,26 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaargo
-if [ $? -ne 0 ]; then
-  echo "make eoepcaargo failed"
-  exit 2
-fi
+#docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaargo
+#if [ $? -ne 0 ]; then
+#  echo "make eoepcaargo failed"
+#  exit 2
+#fi
+#
+#docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  sources
+#if [ $? -ne 0 ]; then
+#  echo "make sources failed"
+#  exit 2
+#fi
 
-docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  sources
+docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  argo_interface
 if [ $? -ne 0 ]; then
   echo "make sources failed"
   exit 2
 fi
+
+
+exit;
 
 HERE=$PWD
 cd build/3ty/proc-comm-zoo/proc-comm-zoo/

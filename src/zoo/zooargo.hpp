@@ -60,6 +60,7 @@ class ArgoInterface : protected mods::IModInterface {
 public:
     struct ArgoWorkflowConfig{
       std::string uri{""};
+      std::string eoepcaargoPath{""};
     };
 
 

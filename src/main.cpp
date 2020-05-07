@@ -15,6 +15,8 @@
   "/Users/rdirienzo/Project/EOEPCA/ades-core-engine-api-framework/"            \
   "cmake-build-debug/libargo_interface.dylib"
 
+#define EOEPCAARGOPATH "/sdfdsfsd/sdfsdfsf/sdfdsfsd/fssdfds"
+
 struct Util {
 
   static int loadFile(const char *filePath, std::stringstream &sBuffer) {
@@ -41,6 +43,7 @@ int main(int a, char **b) {
 
   auto argoConfig = std::make_unique<mods::ArgoInterface::ArgoWorkflowConfig>();
   argoConfig->uri = ARGO_URI;
+  argoConfig->eoepcaargoPath=EOEPCAARGOPATH;
 
   std::string uuidBaseID("argoservice");
   std::string runId("6f189344-9074-11ea-b9ca-3b5c9fef9034");

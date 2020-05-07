@@ -32,7 +32,7 @@ set(LIB_SRC  src/zoo/zooargo.hpp
         )
 
 add_library(argo_interface SHARED ${LIB_SRC})
-TARGET_LINK_LIBRARIES(argo_interface )#sources eoepcaargo
+TARGET_LINK_LIBRARIES(argo_interface sources eoepcaargo)
 
 add_executable(ades_main ${src_main})
 TARGET_LINK_LIBRARIES(ades_main ${MODS_LIBS})

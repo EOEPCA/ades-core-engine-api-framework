@@ -243,6 +243,14 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
       return SERVICE_FAILED;
     }
 
+    if (confEoepca["argopath"].empty()) {
+      setStatus(conf, "failed", "eoepca configuration argopath empty");
+      return SERVICE_FAILED;
+    }
+
+    auto argoConfig = std::make_unique<mods::ArgoInterface::ArgoWorkflowConfig>();
+    argoConfig->uri = confEoepca["argopath"];
+
     auto argoInterface =
         std::make_unique<mods::ArgoInterface>(confEoepca["libargo"]);
     if (!argoInterface->IsValid()) {
@@ -279,12 +287,12 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
     setStatus(conf, "running", "the service is started");
     std::string argoWorkflowId("");
 
-    argoInterface->start(cwlBuffer.str(), inputParam, lenv["Identifier"],
+    argoInterface->start(*argoConfig.get(),cwlBuffer.str(), inputParam, lenv["Identifier"],
                          lenv["uusid"], argoWorkflowId);
 
     int percent = 0;
     std::string message("");
-    while (argoInterface->getStatus(argoWorkflowId, percent, message)) {
+    while (argoInterface->getStatus(*argoConfig.get(),argoWorkflowId, percent, message)) {
       updateStatus(conf, percent, message.c_str());
       sleep(10);
     }
@@ -293,7 +301,7 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
     sleep(10);
 
     std::list<std::pair<std::string, std::string>> outPutList{};
-    argoInterface->getResults(argoWorkflowId, outPutList);
+    argoInterface->getResults(*argoConfig.get(),argoWorkflowId, outPutList);
 
     for (auto &[k, p] : outPutList) {
       setMapInMaps(outputs, k.c_str(), "value", p.c_str());
