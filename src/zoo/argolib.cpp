@@ -4,6 +4,7 @@
 #include <utility>
 
 #include <eoepca/argo/eoepcaargo.hpp>
+#include <graph.hpp>
 
 #include "zooargo.hpp"
 
@@ -13,9 +14,11 @@ extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig& awConfig,const std
                      std::string &id) {
 
 
-
-
   auto argoLib = std::make_unique<EOEPCA::EOEPCAargo>(awConfig.eoepcaargoPath);
+  auto graph = std::make_unique<Graph>();
+
+
+
 
 
   return 0;

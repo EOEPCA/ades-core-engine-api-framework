@@ -27,12 +27,12 @@ if [ $? -ne 0 ]; then
   echo "make eoepcaargo failed"
   exit 2
 fi
-#
-#docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  sources
-#if [ $? -ne 0 ]; then
-#  echo "make sources failed"
-#  exit 2
-#fi
+
+docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  sources
+if [ $? -ne 0 ]; then
+  echo "make sources failed"
+  exit 2
+fi
 
 docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  argo_interface
 if [ $? -ne 0 ]; then
@@ -40,10 +40,10 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-#HERE=$PWD
-#cd build/3ty/proc-comm-zoo/proc-comm-zoo/
-#chmod +x ./scripts/build.sh
-#./scripts/build.sh
-#
-#cd $HERE
-#docker build --rm -t ${LOCAL_IMAGE_NAME} .
+HERE=$PWD
+cd build/3ty/proc-comm-zoo/proc-comm-zoo/
+chmod +x ./scripts/build.sh
+./scripts/build.sh
+
+cd $HERE
+docker build --rm -t ${LOCAL_IMAGE_NAME} .
