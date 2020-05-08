@@ -3,12 +3,20 @@
 #include <string>
 #include <utility>
 
+#include <eoepca/argo/eoepcaargo.hpp>
+
 #include "zooargo.hpp"
 
 extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig& awConfig,const std::string &cwlContent,
                      std::list<std::pair<std::string, std::string>> &inputList,
                      const std::string &uuidBaseID, const std::string &runId,
                      std::string &id) {
+
+
+
+
+  auto argoLib = std::make_unique<EOEPCA::EOEPCAargo>(awConfig.eoepcaargoPath);
+
 
   return 0;
 }

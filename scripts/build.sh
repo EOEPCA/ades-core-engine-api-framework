@@ -40,10 +40,10 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-HERE=$PWD
-cd build/3ty/proc-comm-zoo/proc-comm-zoo/
-chmod +x ./scripts/build.sh
-./scripts/build.sh
-
-cd $HERE
-docker build --rm -t ${LOCAL_IMAGE_NAME} .
+#HERE=$PWD
+#cd build/3ty/proc-comm-zoo/proc-comm-zoo/
+#chmod +x ./scripts/build.sh
+#./scripts/build.sh
+#
+#cd $HERE
+#docker build --rm -t ${LOCAL_IMAGE_NAME} .

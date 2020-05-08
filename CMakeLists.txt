@@ -18,6 +18,12 @@ add_subdirectory(3ty/proc-comm-zoo)
 
 include_directories(cmake-build-debug/3ty/proc-comm-lib-argo/proc-comm-lib-argo/includes)
 include_directories(cmake-build-debug/3ty/proc-comm-lib-cwl/proc-comm-lib-cwl/include)
+include_directories(cmake-build-debug/3ty/proc-comm-lib-argo/proc-comm-lib-argo/3ty)
+
+include_directories(build/3ty/proc-comm-lib-argo/proc-comm-lib-argo/includes)
+include_directories(build/3ty/proc-comm-lib-argo/proc-comm-lib-argo/3ty)
+include_directories(build/3ty/proc-comm-lib-cwl/proc-comm-lib-cwl/include)
+
 
 SET(MODS_LIBS
         z m dl

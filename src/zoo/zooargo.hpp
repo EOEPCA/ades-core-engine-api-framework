@@ -11,6 +11,8 @@
 #include <utility>
 
 namespace mods {
+#ifndef T2CWL_IMOD_HPP
+#define T2CWL_IMOD_HPP
 class IModInterface {
   bool valid{false};
 
@@ -55,7 +57,7 @@ protected:
 private:
   std::string path_{""};
 };
-
+#endif
 class ArgoInterface : protected mods::IModInterface {
 
 public:
