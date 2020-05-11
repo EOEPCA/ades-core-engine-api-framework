@@ -35,3 +35,4 @@ cmake-build-debug/
 build
 
 .idea/
+/3ty/proc-comm-lib-cwl/.idea/

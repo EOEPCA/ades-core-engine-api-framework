@@ -57,7 +57,7 @@ The final result will be a simple phrase that will be composed from an input str
 
 Input starts from the WMS server and analyzed by the WPS service and processed for Argo Workflow
 
-
+ 
 ### Built With
 
 - [Docker](https://www.docker.com/)
