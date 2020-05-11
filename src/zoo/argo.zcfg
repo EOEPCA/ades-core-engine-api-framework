@@ -23,7 +23,7 @@
 </DataInputs>
 
 <DataOutputs>
-    [result_osd]
+    [content]
     Title = OpenSearch Description to the Results
     Abstract = OpenSearch Description to the Results
 <ComplexOutput>

@@ -19,7 +19,7 @@
         "schema": "string",
         "encoding": "string"
       },
-      "id": "result_osd",
+      "id": "content",
       "transmissionMode": "value"
     }
   ],
