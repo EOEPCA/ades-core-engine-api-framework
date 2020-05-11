@@ -302,7 +302,7 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
     setStatus(conf, "running", "the service is started");
     std::string argoWorkflowId("");
 
-    argoInterface->start(*argoConfig.get(),cwlBuffer.str(), inputParam, lenv["Identifier"],
+   argoInterface->start(*argoConfig.get(),cwlBuffer.str(), inputParam, lenv["Identifier"],
                          lenv["uusid"], argoWorkflowId);
 
     int percent = 0;

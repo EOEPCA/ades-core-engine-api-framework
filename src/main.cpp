@@ -12,9 +12,9 @@
 #define CWLPATH                                                                \
   "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/src/zoo/argo.cwl"
 #define LIBPATH                                                                \
-  "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/cmake-build-debug/libargo_interface.so"
+  "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/build/libargo_interface.so"
 
-#define EOEPCAARGOPATH "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/cmake-build-debug/3ty/proc-comm-lib-argo/proc-comm-lib-argo-build/libeoepcaargo.so"
+#define EOEPCAARGOPATH "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/build/3ty/proc-comm-lib-argo/proc-comm-lib-argo-build/libeoepcaargo.so"
 
 
 struct Util {
@@ -34,7 +34,7 @@ int main(int a, char **b) {
   auto argoInterface = std::make_unique<mods::ArgoInterface>(LIBPATH);
   if (!argoInterface->IsValid()) {
 
-    std::cerr << "libargo_interface.dylib NOT VALID\n";
+    std::cerr << LIBPATH << " libargo_interface.dylib NOT VALID\n";
     return 1;
   }
 
@@ -66,7 +66,7 @@ int main(int a, char **b) {
 
 
 
-  sleep(4);
+  sleep(10);
   std::list<std::pair<std::string, std::string>> outPutList;
   argoInterface->getResults(*argoConfig.get(), argoWorkflowId, outPutList);
 

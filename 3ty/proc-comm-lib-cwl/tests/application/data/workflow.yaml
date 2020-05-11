@@ -1,0 +1,45 @@
+$graph:
+  - baseCommand: echo
+    class: CommandLineTool
+    hints:
+      DockerRequirement:
+        dockerPull: helloworld:1.0
+    id: helloworld
+    inputs:
+      arg1:
+        inputBinding:
+          position: 1
+          prefix: --input
+        type: string
+    outputs:
+      results:
+        outputBinding:
+          glob: .
+        type: Any
+    stderr: std.err
+    stdout: std.out
+
+  - class: Workflow
+    id: helloworld-wf # service id [WPS] map to wps:Input/ows:identifier
+    label: Hello World # title [WPS] map to wps:Input/ows:title
+    doc: Hello World Test Workflow # description [WPS] map to wps:Input/ows:abstract
+    inputs:
+      input_string: # parameter id [WPS] map to wps:Input/ows:identifier
+        doc: string to be echoed # [WPS] maps to wps:Input/ows:abstract
+        label: input string # [WPS] maps to wps:Input/ows:title
+        type: string
+    outputs:
+      results: # parameter id [WPS] map to wps:Output/ows:identifier
+        label: Result string
+        outputSource:
+          - step1/results
+        type:
+          items: Directory
+          type: array
+    steps:
+      step1:
+        in:
+          arg1: input_string
+        out:
+          - results
+        run: '#helloworld'

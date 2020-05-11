@@ -8,15 +8,22 @@
 
 #include "zooargo.hpp"
 
+
 extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const std::string &cwlContent, std::list<std::pair<std::string, std::string>> &inputList, const std::string &uuidBaseID, const std::string &runId, std::string &id) {
+
+
+    std::cerr<<"start is called"<<std::endl;
 
     // argolib
     auto argoLib = std::make_unique<EOEPCA::EOEPCAargo>(awConfig.eoepcaargoPath);
 
+    std::cerr<<"starting parser bb " <<std::endl;
     // parsing Graph
     auto cwl_graph = std::make_unique<Graph>();
+    std::cerr<<"starting parser bb2 " <<std::endl;
     cwl_graph->loadCwlFileContent(cwlContent);
 
+    std::cerr<<"parse complete"<<std::endl;
     // COMMAND LINE TOOL
     auto cwl_commandLineTool = cwl_graph->getCommandLineTool();
 
@@ -25,6 +32,7 @@ extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const st
     // hints
     std::string dockerImageName = cwl_commandLineTool.getHints().front().getDockerRequirement().getDockerPull();
 
+    std::cerr<<"basecommand and dockerimage retrieved"<<std::endl;
 
     // WORKFLOW
     auto cwl_workflow = cwl_graph->getWorkflow();
@@ -37,14 +45,16 @@ extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const st
     application->setUseShell(true);
     application->setCommand(baseCommand);
 
+    std::cerr<<"inputs"<<std::endl;
     for (auto const input : inputList) {
-        //std::cout<<input.first<< input.second<<std::endl;
+
+        std::cerr<<input.first<< input.second<<std::endl;
         application->addParam(input.first, input.second);
     }
 
-    //std::string yaml;
-    //argoLib->create_workflow_yaml_from_app(application.get(),yaml);
-    //std::cout<<yaml<<std::endl;
+    std::string yaml;
+    argoLib->create_workflow_yaml_from_app(application.get(),yaml);
+    std::cerr<<yaml<<std::endl;
 
     std::string argoNamespace="default";
     proc_comm_lib_argo::model::Workflow workflow;

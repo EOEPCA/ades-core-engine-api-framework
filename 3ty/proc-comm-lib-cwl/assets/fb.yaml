@@ -1,0 +1,67 @@
+#!/usr/bin/env cwl-runner
+cwlVersion: v1.0
+$graph:
+  - id: jobRun
+    baseCommand: s2-thermal-index
+    class: CommandLineTool
+    cwlVersion: v1.0
+    inputs:
+      data_path:
+        inputBinding:
+          position: 2
+          prefix: --data_path
+        type: string
+      input_reference:
+        inputBinding:
+          position: 1
+          prefix: --input_reference
+        type: string
+      stage-in:
+        inputBinding:
+          position: 3
+          prefix: --stage-in
+        type: string
+    outputs:
+      results:
+        outputBinding:
+          glob: '*'
+        type:
+          items: File
+          type: array
+      std-err:
+        type: stderr
+      std-out:
+        type: stdout
+    requirements:
+      EnvVarRequirement:
+        envDef:
+          BLA: 123123
+          PATH: /opt/anaconda/envs/env_app/conda-otb/bin:/opt/anaconda/envs/env_app/bin:/opt/anaconda/condabin:/opt/anaconda/envs/env_app/bin:/opt/anaconda/bin:/home/jenkins/envs/bin:/opt/anaconda/condabin:/home/jenkins/workspace/t2pc/pipeline-conda@tmp/withMaven892294c4:/opt/anaconda/bin:/usr/local/bin:/bin:/usr/bin
+    stderr: std.err
+    stdout: std.out
+
+  - id: mainWorkflow
+    class: Workflow
+    requirements:
+      - class: ScatterFeatureRequirement
+    inputs:
+      inp1: string
+      inp2: string
+      inp3: string
+    output:
+      finalRes:
+        type: File[]
+        outputSource: jobStep1/results
+
+    steps:
+      jobStep1:
+        in:
+          data_path: inp1
+          input_reference: inp2
+          stage-in: inp3
+        scattet: input_reference
+        run: "#jobRun"
+        out: [results]
+    outputs:
+
+

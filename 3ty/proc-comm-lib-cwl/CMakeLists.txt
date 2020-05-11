@@ -1,34 +1,43 @@
 cmake_minimum_required(VERSION 3.5)
+project(proc_comm_lib_cwl)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MACOSX_RPATH OFF)
+set(CMAKE_CXX_FLAGS "-fPIC")
 
-configure_file(CMakeLists.txt.in proc-comm-lib-cwl-download/CMakeLists.txt)
+# YAML-CPP
+if((NOT DEFINED ENV{IMPORT_YAML_CPP}) OR ($ENV{IMPORT_YAML_CPP}))
+    set(YAML_CPP_BUILD_TESTS OFF: FORCE)
+    add_subdirectory(3ty/yaml-cpp-yaml-cpp-0.6.3)
+    include_directories(3ty/yaml-cpp-yaml-cpp-0.6.3/include)
+ENDIF()
 
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/proc-comm-lib-cwl-download )
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if(result)
-    message(FATAL_ERROR "CMake step for owslib failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/proc-comm-lib-cwl-download )
-if(result)
-    message(FATAL_ERROR "Build step for owslib failed: ${result}")
-endif()
+include_directories(include)
+include_directories(3ty)
 
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/proc-comm-lib-cwl
-        ${CMAKE_CURRENT_BINARY_DIR}/proc-comm-lib-cwl-build
-        EXCLUDE_FROM_ALL)
+set(src_main src/main.cpp )
 
- 
+SET(LIB_SRC
+        src/cwlconverter.cpp
+        src/model/commandlinetool.cpp
+        src/model/commandlinetool.hpp
+        src/model/workflow.cpp
+        src/model/workflow.hpp
+        src/model/graph.cpp
+        src/model/graph.hpp)
 
-#SET(PROC_COMM_ZOO_SVC_INCLUDE ${CMAKE_CURRENT_BINARY_DIR}/3ty/proc-comm-lib-ows/proc-comm-lib-ows/includes  PARENT_SCOPE)
+SET(MODS_LIBS
+        z m dl
+        )
 
+add_library(sources STATIC ${LIB_SRC}  )
+target_link_libraries(sources yaml-cpp  ${MODS_LIBS})
 
+add_executable(proc_comm_lib_cwl ${src_main})
+target_link_libraries(proc_comm_lib_cwl ${MODS_LIBS} sources )
 
-
-
-
-
-
+if((NOT DEFINED ENV{RUN_TESTS}) OR ($ENV{RUN_TESTS}))
+    add_subdirectory(tests)
+ENDIF()

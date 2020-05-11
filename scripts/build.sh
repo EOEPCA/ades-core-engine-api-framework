@@ -34,7 +34,7 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  argo_interface
+docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make ades_main argo_interface
 if [ $? -ne 0 ]; then
   echo "make sources failed"
   exit 2
