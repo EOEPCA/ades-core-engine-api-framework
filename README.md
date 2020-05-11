@@ -51,7 +51,12 @@
 
 ## About The Project
 
-xxxxxxxxxxxxxxxxxx
+The purpose of this project is to test the ADES workflow.
+
+The final result will be a simple phrase that will be composed from an input string and an elaborated string.
+
+Input starts from the WMS server and analyzed by the WPS service and processed for Argo Workflow
+
 
 ### Built With
 
@@ -298,10 +303,95 @@ curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
 
 ### Start
 
+Our tutorial will start in the dev-env-argo environment
+
+1) Start "eoepca-ades-core"
+
 ```shell script
 docker run --rm  -d --name zoo -p 7777:80   eoepca-ades-core:1.0
 ```
 
+2) run a getProcess to test the installation:
+
+```shell script
+curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
+```
+
+3) Looking for the our service argo:
+ 
+```shell script
+curl -s -L "http://localhost:7777/wps3/processes/argo" -H "accept: application/json"
+```
+
+```json
+{
+  "process": {
+    "id": "argo",
+    "title": "Eoepca Deploy Process",
+    "abstract": "argo test 1.0",
+    "version": "1.0.0",
+    "jobControlOptions": [
+      "sync-execute",
+      "async-execute",
+      "dismiss"
+    ],
+    "outputTransmission": [
+      "value",
+      "reference"
+    ],
+    "links": [
+      {
+        "rel": "canonical",
+        "type": "application/json",
+        "title": "Execute End Point",
+        "href": "/watchjob/processes/argo/jobs/"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "input_string",
+        "title": "The input1",
+        "abstract": "the input_string",
+        "minOccurs": "1",
+        "maxOccurs": "1",
+        "input": {
+          "formats": [
+            {
+              "default": true,
+              "mimeType": "application/atom+xml"
+            },
+            {
+              "default": false,
+              "mimeType": "application/atom+xml"
+            }
+          ]
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "result_osd",
+        "title": "OpenSearch Description to the Results",
+        "abstract": "OpenSearch Description to the Results",
+        "output": {
+          "formats": [
+            {
+              "default": true,
+              "mimeType": "application/opensearchdescription+xml"
+            },
+            {
+              "default": false,
+              "mimeType": "application/opensearchdescription+xml"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+For this release "Argo" is only a simple 
 
 
 
