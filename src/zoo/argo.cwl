@@ -3,7 +3,7 @@ $graph:
     class: CommandLineTool
     hints:
       DockerRequirement:
-        dockerPull: helloworld:1.0
+        dockerPull: centos:7
     id: helloworld
     inputs:
       arg1:

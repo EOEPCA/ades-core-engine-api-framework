@@ -7,15 +7,15 @@
 #include <sstream>
 #include <unistd.h>
 
-#define ARGO_URI "http://dsads:22222/adsdssdf/sdfdsfsdfsd/fdsdfsdfs"
+#define ARGO_URI "http://localhost:8080"
+#define K8_URI "http://127.0.0.1:2746"
 #define CWLPATH                                                                \
-  "/Users/rdirienzo/Project/EOEPCA/ades-core-engine-api-framework/src/zoo/"    \
-  "argo.cwl"
+  "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/src/zoo/argo.cwl"
 #define LIBPATH                                                                \
-  "/Users/rdirienzo/Project/EOEPCA/ades-core-engine-api-framework/"            \
-  "cmake-build-debug/libargo_interface.dylib"
+  "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/cmake-build-debug/libargo_interface.so"
 
-#define EOEPCAARGOPATH "/sdfdsfsd/sdfsdfsf/sdfdsfsd/fssdfds"
+#define EOEPCAARGOPATH "/home/bla/dev/EOEPCA_dev/ades-core-engine-api-framework/cmake-build-debug/3ty/proc-comm-lib-argo/proc-comm-lib-argo-build/libeoepcaargo.so"
+
 
 struct Util {
 
@@ -42,7 +42,8 @@ int main(int a, char **b) {
   Util::loadFile(CWLPATH, cwlBuffer);
 
   auto argoConfig = std::make_unique<mods::ArgoInterface::ArgoWorkflowConfig>();
-  argoConfig->uri = ARGO_URI;
+  argoConfig->argoUri = ARGO_URI;
+  argoConfig->k8Uri = K8_URI;
   argoConfig->eoepcaargoPath=EOEPCAARGOPATH;
 
   std::string uuidBaseID("argoservice");
@@ -52,18 +53,21 @@ int main(int a, char **b) {
   std::list<std::pair<std::string, std::string>> inputList{};
   inputList.emplace_back("input_string", "una string a caso");
 
-  argoInterface->start(*argoConfig.get(), cwlBuffer.str(), inputList,
-                       uuidBaseID, runId, argoWorkflowId);
+  argoInterface->start(*argoConfig.get(), cwlBuffer.str(), inputList,uuidBaseID, runId, argoWorkflowId);
 
+  std::cout<<"argoWorkflowId: "<<argoWorkflowId<<std::endl;
   int percent = 0;
-  std::string message("");
-  while (argoInterface->getStatus(*argoConfig.get(), argoWorkflowId, percent,
-                                  message)) {
-    std::cout << "percent: " << percent << " message: " << message;
-    sleep(5);
+  std::string message("Running");
+
+  while(message.compare("Running")==0 ) {
+      argoInterface->getStatus(*argoConfig.get(), argoWorkflowId, percent, message);
+      std::cout << "percent: " << percent << " message: " << message<<std::endl;
   }
 
-  std::list<std::pair<std::string, std::string>> outPutList{};
+
+
+  sleep(4);
+  std::list<std::pair<std::string, std::string>> outPutList;
   argoInterface->getResults(*argoConfig.get(), argoWorkflowId, outPutList);
 
   for (auto &[k, p] : outPutList) {

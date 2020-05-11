@@ -248,13 +248,19 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
       return SERVICE_FAILED;
     }
 
-    if (confEoepca["argopath"].empty()) {
-      setStatus(conf, "failed", "eoepca configuration argopath empty");
+    if (confEoepca["argoUrl"].empty()) {
+      setStatus(conf, "failed", "eoepca configuration argoUrl empty");
       return SERVICE_FAILED;
     }
 
+      if (confEoepca["k8Url"].empty()) {
+          setStatus(conf, "failed", "eoepca configuration k8Url empty");
+          return SERVICE_FAILED;
+      }
+
     auto argoConfig = std::make_unique<mods::ArgoInterface::ArgoWorkflowConfig>();
-    argoConfig->uri = confEoepca["argopath"];
+    argoConfig->argoUri = confEoepca["argoUrl"];
+    argoConfig->k8Uri = confEoepca["k8Url"];
     argoConfig->eoepcaargoPath=confEoepca["libeoepcaargo"];
 
     auto argoInterface =
@@ -264,7 +270,7 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
 
       fflush(stderr);
 
-      std::string err("szzzThe library ");
+      std::string err("The library ");
       err.append(confEoepca["libargo"]);
       err.append(" is not valid!");
       setStatus(conf, "failed", err.c_str());
