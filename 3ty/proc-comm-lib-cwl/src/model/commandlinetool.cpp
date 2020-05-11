@@ -199,10 +199,15 @@ namespace CommandLineTool {
         if (outputCwlModel.has_value()) {
             std::cout<<"Inside commandLineToolCwlModel outputs inside"<<std::endl;
             for (auto const &outputData : outputCwlModel->getList()) {
+                std::cout<<"Inside commandLineToolCwlModel outputs inside"<<std::endl;
+
                 std::string argName = outputData.getId();
+                std::cout<<"output "<< argName<<std::endl;
                 auto outCwlModel = CwlConverter::find(outputCwlModel.value(), argName, "");
                 Output output;
+                std::cout<<"output.loadCwlModel start"<<std::endl;
                 output.loadCwlModel(outCwlModel.value());
+                std::cout<<"output.loadCwlModel done"<<std::endl;
                 outputs.emplace_back(output);
             }
         }
@@ -550,14 +555,18 @@ namespace CommandLineTool {
             Output::setType(type->getVal());
         }
 
+        std::cout<<"outputBinding start"<<std::endl;
         //outputBinding
         auto outputBindingCwlModel = CwlConverter::find(cwlModel, "outputBinding", "");
         if (outputBindingCwlModel.has_value()) {
             CommandOutputBinding outputBinding;
-            outputBinding.loadCwlModel(outputBindingCwlModel.value());
-            Output::setOutputBinding(outputBinding);
-        }
+            std::cout<<"outputBinding start"<<std::endl;
+            //outputBinding.loadCwlModel(outputBindingCwlModel.value());
+            std::cout<<"outputBinding start1"<<std::endl;
+            //Output::setOutputBinding(outputBinding);
 
+        }
+        std::cout<<"outputBinding end"<<std::endl;
 
     }
     const DockerRequirement &Hint::getDockerRequirement() const {
