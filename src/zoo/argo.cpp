@@ -305,22 +305,29 @@ ZOO_DLL_EXPORT int argo(maps *&conf, maps *&inputs, maps *&outputs) {
     argoInterface->start(*argoConfig.get(),cwlBuffer.str(), inputParam, lenv["Identifier"],
                          lenv["uusid"], argoWorkflowId);
 
+
+	std::cerr<<"start finished"<<std::endl;
     int percent = 0;
     std::string message("");
     while (argoInterface->getStatus(*argoConfig.get(),argoWorkflowId, percent, message)) {
       updateStatus(conf, percent, message.c_str());
+ std::cerr<<"going to sleep"<<std::endl;
       sleep(10);
     }
 
+ std::cerr<<"status finished"<<std::endl;
     updateStatus(conf, 100, "Done");
-    sleep(10);
+    sleep(20);
 
     std::list<std::pair<std::string, std::string>> outPutList{};
+ std::cerr<<"getresult "<< argoWorkflowId <<std::endl;
     argoInterface->getResults(*argoConfig.get(),argoWorkflowId, outPutList);
-
+ std::cerr<<"getresults finished"<<std::endl;
     for (auto &[k, p] : outPutList) {
+std::cerr<<"output"<< p << " " << k <<std::endl;
       setMapInMaps(outputs, k.c_str(), "value", p.c_str());
     }
+ std::cerr<<"mapping results"<<std::endl;
 
     //  - accepted
     //  - running
