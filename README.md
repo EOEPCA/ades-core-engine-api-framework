@@ -308,7 +308,7 @@ Our tutorial will start in the dev-env-argo environment
 1) Start "eoepca-ades-core"
 
 ```shell script
-docker run --rm  -d --name zoo -p 7777:80   eoepca-ades-core:1.0
+docker run --rm  -d --name zoo -p 7777:80 --network host  eoepca-ades-core:1.0
 ```
 
 2) run a getProcess to test the installation:
@@ -391,7 +391,97 @@ curl -s -L "http://localhost:7777/wps3/processes/argo" -H "accept: application/j
 }
 ```
 
-For this release "Argo" is only a simple 
+For this release, "Argo" is only a simple ``echo workflow`` and is defined from CWL file:
+
+```yaml
+$graph:
+  - baseCommand: echo
+    class: CommandLineTool
+    hints:
+      DockerRequirement:
+        dockerPull: centos:7
+    id: helloworld
+    inputs:
+      arg1:
+        inputBinding:
+          position: 1
+          prefix: --input
+        type: string
+    outputs:
+      results:
+        outputBinding:
+          glob: .
+        type: Any
+    stderr: std.err
+    stdout: std.out
+
+  - class: Workflow
+    id: helloworld-wf # service id [WPS] map to wps:Input/ows:identifier
+    label: Hello World # title [WPS] map to wps:Input/ows:title
+    doc: Hello World Test Workflow # description [WPS] map to wps:Input/ows:abstract
+    inputs:
+      input_string: # parameter id [WPS] map to wps:Input/ows:identifier
+        doc: string to be echoed # [WPS] maps to wps:Input/ows:abstract
+        label: input string # [WPS] maps to wps:Input/ows:title
+        type: string
+    outputs:
+      results: # parameter id [WPS] map to wps:Output/ows:identifier
+        label: Result string
+        outputSource:
+          - step1/results
+        type:
+          items: Directory
+          type: array
+    steps:
+      step1:
+        in:
+          arg1: input_string
+        out:
+          - results
+        run: '#helloworld'
+```
+
+
+The parameter file ``argo.json``:
+
+```json
+{
+  "inputs": [
+    {
+      "id": "input_string",
+      "input": {
+        "format": {
+          "mimeType": "application/xml"
+        },
+        "value": {
+          "inlineValue": "CIAO"
+        }
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "format": {
+        "mimeType": "string",
+        "schema": "string",
+        "encoding": "string"
+      },
+      "id": "content",
+      "transmissionMode": "value"
+    }
+  ],
+  "mode": "async",
+  "response": "raw"
+}
+```
+
+Run:
+
+```shell script
+curl -v -L -X POST "http://localhost/wps3/processes/argo/jobs" -H  \
+  "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d@argo.json
+```
+
 
 
 
