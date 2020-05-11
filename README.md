@@ -311,6 +311,8 @@ Our tutorial will start in the dev-env-argo environment
 docker run --rm  -d --name zoo -p 7777:80 --network host  eoepca-ades-core:1.0
 ```
 
+with the option `--network host` the port 7777 will be ignored
+
 2) run a getProcess to test the installation:
 
 ```shell script
@@ -441,7 +443,6 @@ $graph:
         run: '#helloworld'
 ```
 
-
 The parameter file ``argo.json``:
 
 ```json
@@ -482,12 +483,105 @@ curl -v -L -X POST "http://localhost/wps3/processes/argo/jobs" -H  \
   "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d@argo.json
 ```
 
+Get Argo Jobs:
 
+```shell script
+curl  -v  -s -L "http://localhost/wps3/processes/argo/jobs" -H "accept: application/json" 
+```
 
+```json
+[
+  {
+    "id": "ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe",
+    "infos": {
+      "status": "successful",
+      "message": "ZOO-Kernel successfully run your service!",
+      "links": [
+        {
+          "Title": "Status location",
+          "href": "/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe"
+        },
+        {
+          "Title": "Result location",
+          "href": "/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe/result"
+        }
+      ]
+    }
+  },
+  {
+    "id": "d4a4604c-93cd-11ea-b74a-a0c5899f98fe",
+    "infos": {
+      "status": "successful",
+      "message": "ZOO-Kernel failed to run your service!",
+      "links": [
+        {
+          "Title": "Status location",
+          "href": "/watchjob/processes/argo/jobs/d4a4604c-93cd-11ea-b74a-a0c5899f98fe"
+        }
+      ]
+    }
+  },
+  {
+    "id": "31ecd6cc-93cd-11ea-bdf6-a0c5899f98fe",
+    "infos": {
+      "status": "successful",
+      "message": "ZOO-Kernel failed to run your service!",
+      "links": [
+        {
+          "Title": "Status location",
+          "href": "/watchjob/processes/argo/jobs/31ecd6cc-93cd-11ea-bdf6-a0c5899f98fe"
+        }
+      ]
+    }
+  }
+]
+```
 
+Get Argo Job ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe:
 
+```shell script
+curl  -v  -s -L "http://localhost/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe" -H "accept: application/json"
+```
 
+```json
+{
+  "jobID": "ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe",
+  "status": "successful",
+  "message": "Done",
+  "progress": "100",
+  "links": [
+    {
+      "href": "http://localhost/t2dep//processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe",
+      "rel": "self",
+      "type": "application/json",
+      "title": "get Status"
+    }
+  ]
+}
+```
 
+and Get Result
+
+```shell script
+curl  -v  -s -L "http://localhost/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe/result" -H "accept: application/json"
+```
+
+```json
+{
+  "outputs": [
+    {
+      "id": "content",
+      "value": {
+        "inlineValue": "CIAO"
+      }
+    },
+    {
+      "id": "podName",
+      "value": {}
+    }
+  ]
+}
+```
 
 ## Contributing
 
@@ -505,13 +599,11 @@ Contributions are what make the open source community such an amazing place to b
 
 Distributed under the Apache-2.0 License. See `LICENSE` for more information.
 
-
 ## Contact
 
 <!-- ACKNOWLEDGEMENTS -->
 
 ## Acknowledgements
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
