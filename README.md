@@ -316,13 +316,13 @@ with the option `--network host` the port 7777 will be ignored
 2) run a getProcess to test the installation:
 
 ```shell script
-curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
+curl -s -L "http://localhost/wps3/processes" -H "accept: application/json"
 ```
 
 3) Looking for the our service argo:
  
 ```shell script
-curl -s -L "http://localhost:7777/wps3/processes/argo" -H "accept: application/json"
+curl -s -L "http://localhost/wps3/processes/argo" -H "accept: application/json"
 ```
 
 ```json
