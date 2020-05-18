@@ -29,10 +29,6 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-docker run  --rm -w /project/zooservice  -v $PWD:/project  proc-comm-zoo:1.0 make -C ../src/deployundeploy/zoo/
-
-
-
 #docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaargo
 #if [ $? -ne 0 ]; then
 #  echo "make eoepcaargo failed"
@@ -53,11 +49,16 @@ docker run  --rm -w /project/zooservice  -v $PWD:/project  proc-comm-zoo:1.0 mak
 #
 #
 
-
 HERE=$PWD
 cd 3ty/proc-comm-zoo-1.0
 chmod +x ./scripts/build.sh
 ./scripts/build.sh
+
+docker run  --rm -w /project/zooservice  -v $PWD:/project  proc-comm-zoo:1.0 make -C ../src/deployundeploy/zoo/
+if [ $? -ne 0 ]; then
+  echo "make deployundeploy failed"
+  exit 2
+fi
 
 cd $HERE
 docker build --rm -t ${LOCAL_IMAGE_NAME} .
