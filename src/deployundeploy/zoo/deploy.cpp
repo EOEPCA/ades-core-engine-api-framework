@@ -163,12 +163,14 @@ int simpleRemove(std::string finalPath, std::string_view owsOri, maps *&conf,
         fileCwl.append(".yaml");
         finalPath.append(".zcfg");
 
-        if (fileExist(finalPath.data()) && removeFile(finalPath.c_str()) &&
-            removeFile(fileCwl.c_str())) {
+        std::cerr << fileCwl << "\n";
+
+        if (fileExist(finalPath.data()) && removeFile(finalPath.c_str())) {
           xml->writeAttribute("err", "4");
           xml->writeAttribute("message", "Can't remove the service");
           xml->writeContent("not removed");
         } else {
+          removeFile(fileCwl.c_str());
           xml->writeAttribute("err", "0");
           xml->writeAttribute("message", "0");
           xml->writeContent("removed");
