@@ -54,11 +54,13 @@ cd 3ty/proc-comm-zoo-1.0
 chmod +x ./scripts/build.sh
 ./scripts/build.sh
 
+cd $HERE
+
 docker run  --rm -w /project/zooservice  -v $PWD:/project  proc-comm-zoo:1.0 make -C ../src/deployundeploy/zoo/
 if [ $? -ne 0 ]; then
   echo "make deployundeploy failed"
   exit 2
 fi
 
-cd $HERE
+
 docker build --rm -t ${LOCAL_IMAGE_NAME} .
