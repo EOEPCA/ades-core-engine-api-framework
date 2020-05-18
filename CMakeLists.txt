@@ -53,7 +53,7 @@ TARGET_LINK_LIBRARIES(argo_interface sources)#eoepcaargo
 add_executable(ades_main ${src_main})
 TARGET_LINK_LIBRARIES(ades_main ${MODS_LIBS})
 
-add_subdirectory(src/deployundeploy/)
+#add_subdirectory(src/deployundeploy/)
 
 
 

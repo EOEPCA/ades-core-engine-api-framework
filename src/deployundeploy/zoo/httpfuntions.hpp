@@ -3,6 +3,7 @@
 #define PROC_COMM_ZOO_SVC_HTTPFUNTIONS_HPP
 
 #include <curl/curl.h>
+#include <string>
 
 size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size,
                                         size_t nmemb, std::string *s) {

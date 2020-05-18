@@ -254,16 +254,18 @@ void ZooJob::addOutput(std::string val) {
 }
 
 std::string ZooJob::getUniqueService() const {
-  std::string toSha1{""};
-  for (auto& tag : tags) {
-    toSha1.append(tag);
-  }
-  toSha1.append(identifier).append(processVersion);
+//  std::string toSha1{""};
+//  for (auto& tag : tags) {
+//    toSha1.append(tag);
+//  }
+//  toSha1.append(identifier).append(processVersion);
+//
+//  std::string id = "w";
+//  id.append(sha1::parseString(toSha1));
+//
+//  return id;
 
-  std::string id = "w";
-  id.append(sha1::parseString(toSha1));
-
-  return id;
+  return identifier;
 }
 
 ZooJob::operator std::string() const {
@@ -398,6 +400,10 @@ std::list<std::unique_ptr<ZooApplication>> ZooConverter::convert(
 
         auto zooConfig = std::make_unique<Zoo>();
         zooConfig->setIdentifier(std::move(zooJob->getUniqueService()));
+
+        zooConfig->setCwlContent(processDescription->getDescriber());
+
+
         zooConfig->setProvider(zooConfig->getIdentifier() + ".zo");
         zooConfig->setPackageId(entry->getPackageIdentifier());
         zooConfig->setProcessDescriptionId(processDescription->getIdentifier());
@@ -473,6 +479,9 @@ const std::string& Zoo::getTitle() const { return title; }
 void Zoo::setTitle(const std::string& title) { Zoo::title = title; }
 const std::string& Zoo::getAbstract() const { return Abstract; }
 void Zoo::setAbstract(const std::string& abstract) { Abstract = abstract; }
+
+const std::string& Zoo::getCwlContent() const { return cwlContent; }
+void Zoo::setCwlContent(const std::string& content) { cwlContent = content; }
 
 void ZooApplication::setContent(std::string_view href, std::string_view type) {
   if (type == "application/vnd.docker.distribution.manifest.v1+json") {

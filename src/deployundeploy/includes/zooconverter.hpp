@@ -13,6 +13,7 @@ class Zoo {
   std::string configFile{""};
   std::string identifier{""};
   std::string provider{""};
+  std::string cwlContent{""};
 
   std::string packageID{""};
   std::string processDescriptionId{""};
@@ -45,6 +46,10 @@ class Zoo {
   void setTitle(const std::string &title);
   const std::string &getAbstract() const;
   void setAbstract(const std::string &abstract);
+
+  const std::string &getCwlContent() const;
+  void setCwlContent(const std::string &content);
+
 };
 
 class ZooApplication {
