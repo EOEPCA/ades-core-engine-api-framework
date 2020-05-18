@@ -1,0 +1,28 @@
+{
+  "inputs": [
+    {
+      "id": "applicationPackage",
+      "input": {
+        "format": {
+          "mimeType": "application/xml"
+        },
+        "value": {
+          "inlineValue": "https://raw.githubusercontent.com/EOEPCA/proc-comm-lib-ows/develop/tests/application/assets/ows2.xml"
+        }
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "format": {
+        "mimeType": "string",
+        "schema": "string",
+        "encoding": "string"
+      },
+      "id": "deployResult",
+      "transmissionMode": "value"
+    }
+  ],
+  "mode": "async",
+  "response": "raw"
+}
