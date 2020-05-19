@@ -20,7 +20,7 @@ jobs:
 
     - stage: smoke and acceptance test
       install: skip
-      script: travis/acceptanceTest.sh
+      script: travis/acce§ptanceTest.sh
 #
 #    - stage: release
 #      if: branch = master AND NOT type IN (pull_request)
