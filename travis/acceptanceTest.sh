@@ -22,8 +22,8 @@ if [ "${TRAVIS}" == "true" ]; then
   echo ""
   sleep 2
 
-  echo "run: bin/transational/03_getStatus.sh"
-  ./bin/transational/03_getStatus.sh
+  echo "run: bin/transational/01_getProcess.sh"
+  ./bin/transational/01_getProcess.sh
   echo ""
   sleep 2
 
