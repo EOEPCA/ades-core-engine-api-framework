@@ -22,28 +22,45 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaargo
+
+docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaows eoepcaargo sources argo_interface
 if [ $? -ne 0 ]; then
   echo "make eoepcaargo failed"
   exit 2
 fi
 
-docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  sources
-if [ $? -ne 0 ]; then
-  echo "make sources failed"
-  exit 2
-fi
-
-docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  argo_interface
-if [ $? -ne 0 ]; then
-  echo "make sources failed"
-  exit 2
-fi
+#docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaargo
+#if [ $? -ne 0 ]; then
+#  echo "make eoepcaargo failed"
+#  exit 2
+#fi
+#
+#docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  sources
+#if [ $? -ne 0 ]; then
+#  echo "make sources failed"
+#  exit 2
+#fi
+#
+#docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make  argo_interface
+#if [ $? -ne 0 ]; then
+#  echo "make sources failed"
+#  exit 2
+#fi
+#
+#
 
 HERE=$PWD
-cd build/3ty/proc-comm-zoo/proc-comm-zoo/
+cd 3ty/proc-comm-zoo-1.0
 chmod +x ./scripts/build.sh
 ./scripts/build.sh
 
 cd $HERE
+
+docker run  --rm -w /project/zooservice  -v $PWD:/project  proc-comm-zoo:1.0 make -C ../src/deployundeploy/zoo/
+if [ $? -ne 0 ]; then
+  echo "make deployundeploy failed"
+  exit 2
+fi
+
+
 docker build --rm -t ${LOCAL_IMAGE_NAME} .

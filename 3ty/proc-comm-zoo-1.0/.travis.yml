@@ -20,15 +20,15 @@ jobs:
 
     - stage: smoke and acceptance test
       install: skip
-      script: travis/acce§ptanceTest.sh
-#
-#    - stage: release
-#      if: branch = master AND NOT type IN (pull_request)
-#      install: skip
-#      script: travis/release.sh
+      script: travis/acceptanceTest.sh
 
-#import:
-#  - docs/.travis.yml
+    - stage: release
+      if: branch = master AND NOT type IN (pull_request)
+      install: skip
+      script: travis/release.sh
+
+import:
+  - docs/.travis.yml
 
 notifications:
   slack: eoepca:Msk9hjQKAbwSYcVWiepenPim
