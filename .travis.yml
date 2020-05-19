@@ -17,10 +17,10 @@ jobs:
     - stage: container creation and publishing
       install: skip
       script: travis/containerCreation.sh
-#
-#    - stage: smoke and acceptance test
-#      install: skip
-#      script: travis/acceptanceTest.sh
+
+    - stage: smoke and acceptance test
+      install: skip
+      script: travis/acceptanceTest.sh
 #
 #    - stage: release
 #      if: branch = master AND NOT type IN (pull_request)
