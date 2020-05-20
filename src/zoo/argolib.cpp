@@ -18,7 +18,8 @@ extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const st
     cwl_graph->loadCwlFileContent(cwlContent);
 
     // COMMAND LINE TOOL
-    auto cwl_commandLineTool = cwl_graph->getCommandLineTool();
+    auto cwl_commandLineToolList = cwl_graph->getCommandLineToolList();
+    auto cwl_commandLineTool = cwl_commandLineToolList.front();
 
     // basecommand
     std::string baseCommand = cwl_commandLineTool.getBaseCommand();
@@ -27,7 +28,8 @@ extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const st
 
 
     // WORKFLOW
-    auto cwl_workflow = cwl_graph->getWorkflow();
+    auto cwl_workflow_list = cwl_graph->getWorkflowList();
+    auto cwl_workflow = cwl_workflow_list.front();
     std::string stepName = cwl_workflow.getSteps().front().getLabel();
 
 
