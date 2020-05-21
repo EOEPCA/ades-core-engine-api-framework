@@ -32,7 +32,6 @@ if [ "${TRAVIS}" == "true" ]; then
   echo ""
   sleep 2
 
-
   echo "run: bin/transational/01_getProcess.sh"
   ./bin/transational/01_getProcess.sh
 
