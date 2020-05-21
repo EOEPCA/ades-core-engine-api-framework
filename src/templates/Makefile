@@ -3,6 +3,9 @@ all:
 	#g++ -std=c++17 argolib.cpp  -shared -fpic -obuild/libargo_interface.so
 	g++ -std=c++17 -Wunused-function -DSERVICENAME=${COMPILE} template.cpp ${CFLAGS} -lcgicc -ljson-c -shared -fpic  -lpthread -ldl -lzoo_service -o/zooservices/${COMPILE}.zo
 
+interface:
+	g++ -std=c++17  interface.cpp ${CFLAGS} -lcgicc -ljson-c -shared -fpic  -lpthread -ldl -lzoo_service -olibinterface.so
+
 argo:
 	mkdir -p  build
 	#g++ -std=c++17 argolib.cpp  -shared -fpic -obuild/libargo_interface.so
@@ -19,6 +22,8 @@ build:
 
 install:
 
+installinterface:
+	cp libinterface.so /opt/t2libs/libinterface.so
 
 local:
 	cp -f * /opt/t2template/
