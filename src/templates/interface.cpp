@@ -302,26 +302,18 @@ ZOO_DLL_EXPORT int interface(maps *&conf, maps *&inputs, maps *&outputs) {
     //==================================GET PARAMETERS
     std::list<std::pair<X2INPUT>> inputParam;
     getT2InputConf(inputs, inputParam);
-
     MEdumpMaps(inputs);
     for (auto &a : inputParam) {
       std::cerr << "Inputs: " << a.first << " " << a.second->id << " " << a.second->value
                 << " " << a.second->mimeType << "\n";
     }
-
-    //    setStatus(conf, "successful", "");
-    //    setMapInMaps(outputs, "results", "value", "theResults");
-    //    return SERVICE_SUCCEEDED;
-
     //==================================GET PARAMETERS
 
     //==================================GET CWL CONTENT
     std::string path("/zooservices/");
     path.append(lenv["Identifier"]).append(".yaml");
-
     std::stringstream cwlBuffer;
     if (loadFile(path.c_str(), cwlBuffer)) {
-
       std::string err("CWL file ");
       err.append(path);
       err.append(" not found!");
@@ -334,9 +326,9 @@ ZOO_DLL_EXPORT int interface(maps *&conf, maps *&inputs, maps *&outputs) {
     setStatus(conf, "running", "the service is started");
     std::string argoWorkflowId("");
 
-    //    argoInterface->start(*argoConfig.get(), cwlBuffer.str(), inputParam,
-    //                         lenv["Identifier"], lenv["uusid"],
-    //                         argoWorkflowId);
+    argoInterface->start(*argoConfig.get(), cwlBuffer.str(), inputParam,
+                         lenv["Identifier"], lenv["uusid"],
+                         argoWorkflowId);
 
     std::cerr << "start finished" << std::endl;
     int percent = 0;

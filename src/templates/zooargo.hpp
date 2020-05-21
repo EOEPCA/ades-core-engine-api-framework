@@ -9,6 +9,7 @@
 
 #include <list>
 #include <utility>
+#include <memory>
 
 namespace mods {
 #ifndef T2CWL_IMOD_HPP
@@ -84,7 +85,7 @@ public:
 
     start =
         (int (*)(ArgoWorkflowConfig & awConfig, const std::string &cwlContent,
-                 std::list<std::pair<std::string, std::string>> &inputList,
+                 std::list<std::pair<std::string, std::unique_ptr<mods::ArgoInterface::tgInput>>> &inputList,
                  const std::string &uuidBaseID, const std::string &runId,
                  std::string &id)) dlsym(handle, "start");
     if (!start) {
@@ -133,7 +134,7 @@ public:
    * @return 0 ok  >0 notOk
    */
   int (*start)(ArgoWorkflowConfig &awConfig, const std::string &cwlContent,
-               std::list<std::pair<std::string, std::string>> &inputList,
+               std::list<std::pair<std::string, std::unique_ptr<mods::ArgoInterface::tgInput>>> &inputList,
                const std::string &uuidBaseID, const std::string &runId,
                std::string &id);
 

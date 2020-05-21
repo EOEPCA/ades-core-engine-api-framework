@@ -5,10 +5,11 @@
 #include <eoepca/argo/eoepcaargo.hpp>
 #include <graph.hpp>
 #include <zconf.h>
+#include <memory>
 
 #include "zooargo.hpp"
 
-extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const std::string &cwlContent, std::list<std::pair<std::string, std::string>> &inputList, const std::string &uuidBaseID, const std::string &runId, std::string &id) {
+extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const std::string &cwlContent, std::list<std::pair<std::string, std::unique_ptr<mods::ArgoInterface::tgInput>>> &inputList, const std::string &uuidBaseID, const std::string &runId, std::string &id) {
 //
 //    // argolib
 //    auto argoLib = std::make_unique<EOEPCA::EOEPCAargo>(awConfig.eoepcaargoPath);

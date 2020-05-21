@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-rm -fvR build
+rm -fvR build zooservice
 
 if [ -z "${BUILDER_DOCKERIMAGE}" ]; then
   BUILDER_DOCKERIMAGE='eoepca/eoepca-build-cpp:1.0'
