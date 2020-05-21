@@ -160,10 +160,13 @@ int simpleRemove(std::string finalPath, std::string_view owsOri, maps *&conf,
       xml->startElement("status");
       {
         std::string fileCwl(finalPath);
+        std::string fileZo(finalPath);
         fileCwl.append(".yaml");
         finalPath.append(".zcfg");
+        fileZo.append(".zo");
 
         std::cerr << fileCwl << "\n";
+        std::cerr << fileZo << "\n";
 
         if (fileExist(finalPath.data()) && removeFile(finalPath.c_str())) {
           xml->writeAttribute("err", "4");
@@ -171,6 +174,7 @@ int simpleRemove(std::string finalPath, std::string_view owsOri, maps *&conf,
           xml->writeContent("not removed");
         } else {
           removeFile(fileCwl.c_str());
+          removeFile(fileZo.c_str());
           xml->writeAttribute("err", "0");
           xml->writeAttribute("message", "0");
           xml->writeContent("removed");
@@ -196,9 +200,15 @@ int job(maps *&conf, maps *&inputs, maps *&outputs, Operation operation) {
 
   std::map<std::string, std::string> confEoepca;
   getT2ConfigurationFromZooMapConfig(conf, "eoepca", confEoepca);
+  std::string buildPath=confEoepca["buildPath"];
 
   std::map<std::string, std::string> confMain;
   getT2ConfigurationFromZooMapConfig(conf, "main", confMain);
+
+  if (buildPath.empty()) {
+    return setZooError(conf, "zoo buildPath empty()", "NoApplicableCode");
+  }
+
 
   if (confMain["servicePath"].empty()) {
     return setZooError(conf, "zoo servicePath empty()", "NoApplicableCode");
@@ -290,7 +300,7 @@ int job(maps *&conf, maps *&inputs, maps *&outputs, Operation operation) {
       xml->startElement("result");
       xml->writeAttribute("applicationPackageFile", owsOri);
 
-      std::string finalPath, cwlRef;
+      std::string finalPath, cwlRef, zooRef;
       for (auto &single : out) {
         xml->startElement("operations");
         {
@@ -309,6 +319,7 @@ int job(maps *&conf, maps *&inputs, maps *&outputs, Operation operation) {
               finalPath = confMain["servicePath"];
               finalPath.append(zoo->getIdentifier());
               cwlRef = finalPath;
+              zooRef = finalPath;
 
               xml->startElement("wpsId");
               { xml->writeContent(zoo->getIdentifier()); }
@@ -326,8 +337,23 @@ int job(maps *&conf, maps *&inputs, maps *&outputs, Operation operation) {
               case Operation::DEPLOY: {
                 finalPath.append(".zcfg");
                 cwlRef.append(".yaml");
+                zooRef.append(".zo");
 
                 xml->startElement("status");
+
+                std::string COMPILE =
+                    ("make -C " + buildPath + " COMPILE=\"" +
+                     zoo->getIdentifier() + "\"  1>&2  ");
+                std::cerr << "***" << COMPILE << "\n";
+                int COMPILERES = system((char *)COMPILE.c_str());
+                sleep(1);
+                if (!fileExist(zooRef.c_str())) {
+                  removeFile(finalPath.c_str());
+                  removeFile(cwlRef.c_str());
+                  removeFile(zooRef.c_str());
+                  throw std::runtime_error("Error during the building phase!");
+                }
+
                 switch (deploy(finalPath, zoo->getConfigFile())) {
                 case DeployResults::NONE: {
                   deploy(cwlRef, zoo->getCwlContent());

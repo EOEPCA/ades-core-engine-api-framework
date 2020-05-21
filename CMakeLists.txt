@@ -25,9 +25,9 @@ include_directories(3ty/yaml-cpp-0.6.3/include)
 add_subdirectory(3ty/proc-comm-lib-argo)
 add_subdirectory(3ty/proc-comm-lib-cwl)
 add_subdirectory(3ty/proc-comm-zoo-1.0)
-add_subdirectory(3ty/proc-comm-lib-ows-1.02)
+add_subdirectory(3ty/proc-comm-lib-ows-1.03)
 
-include_directories(3ty/proc-comm-lib-ows-1.02/includes)
+include_directories(3ty/proc-comm-lib-ows-1.03/includes)
 
 include_directories(cmake-build-debug/3ty/proc-comm-lib-argo/proc-comm-lib-argo/includes)
 include_directories(cmake-build-debug/3ty/proc-comm-lib-cwl/proc-comm-lib-cwl/include)

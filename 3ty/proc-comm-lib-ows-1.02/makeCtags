@@ -1,1 +1,0 @@
-ctags -R --c++-kinds=+p --exclude=.git --fields=+iaS --extras=+q .

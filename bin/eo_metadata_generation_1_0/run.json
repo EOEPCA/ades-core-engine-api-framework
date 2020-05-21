@@ -1,13 +1,13 @@
 {
   "inputs": [
     {
-      "id": "applicationPackage",
+      "id": "input_file",
       "input": {
         "format": {
-          "mimeType": "string"
+          "mimeType": "application/json"
         },
         "value": {
-          "inlineValue": "eo_metadata_generation_1_0"
+          "inlineValue": "http://ssssssssssss"
         }
       }
     }
@@ -19,7 +19,7 @@
         "schema": "string",
         "encoding": "string"
       },
-      "id": "unDeployResult",
+      "id": "results",
       "transmissionMode": "value"
     }
   ],

@@ -7,7 +7,7 @@
           "mimeType": "application/xml"
         },
         "value": {
-          "inlineValue": "https://raw.githubusercontent.com/EOEPCA/proc-comm-lib-ows/develop/tests/application/assets/ows2.xml"
+          "inlineValue": "https://raw.githubusercontent.com/EOEPCA/proc-ades/develop/test/sample_apps/metadata_extractor/ows.xml"
         }
       }
     }

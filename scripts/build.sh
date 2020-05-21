@@ -53,6 +53,11 @@ HERE=$PWD
 cd 3ty/proc-comm-zoo-1.0
 chmod +x ./scripts/build.sh
 ./scripts/build.sh
+if [ $? -ne 0 ]; then
+  echo "3ty/proc-comm-zoo-1.0/scripts/build.sh  ${LOCAL_IMAGE_NAME} failed"
+  exit 2
+fi
+
 
 cd $HERE
 
@@ -64,3 +69,7 @@ fi
 
 
 docker build --rm -t ${LOCAL_IMAGE_NAME} .
+if [ $? -ne 0 ]; then
+  echo "docker build --rm -t ${LOCAL_IMAGE_NAME} failed"
+  exit 2
+fi

@@ -9,6 +9,8 @@
 #include <string>
 
 int main(int argc, const char** argv) {
+
+
   if (argc == 1) {
     std::cerr << "arg1: ows file path";
     return 1;
@@ -47,6 +49,8 @@ int main(int argc, const char** argv) {
 
         for (auto& proc : off->getProcessDescription()) {
           std::cout << proc->getIdentifier() << "\n";
+
+          std::cout << "getVersion: " << proc->getVersion() << "\n";
           std::cout << proc->getTitle() << "\n";
           std::cout << proc->getAbstract() << "\n";
           std::cout << "theParams SIZE INPUT: " << proc->getInputs().size()
