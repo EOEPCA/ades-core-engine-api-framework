@@ -2,6 +2,15 @@ CFLAGS= -Iinclude  -I/opt/zoo-project/zoo-project/zoo-kernel -L/var/lib64   `cgi
 all:
 	#g++ -std=c++17 argolib.cpp  -shared -fpic -obuild/libargo_interface.so
 	g++ -std=c++17 -Wunused-function -DSERVICENAME=${COMPILE} template.cpp ${CFLAGS} -lcgicc -ljson-c -shared -fpic  -lpthread -ldl -lzoo_service -o/zooservices/${COMPILE}.zo
+
+argo:
+	mkdir -p  build
+	#g++ -std=c++17 argolib.cpp  -shared -fpic -obuild/libargo_interface.so
+	g++ -std=c++17 argo.cpp ${CFLAGS} -lcgicc -ljson-c -shared -fpic  -lpthread -ldl -lzoo_service -obuild/argo.zo
+
+argoinstall:
+
+
 clean:
 	rm -fvR build/*
 package:

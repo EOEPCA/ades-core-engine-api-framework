@@ -94,5 +94,7 @@ extern "C" int getResults(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, con
 //    std::string argoNamespace="default";
 //    argoLib->get_workflow_results_from_name(argoWorkflowId,argoNamespace,outPutList,awConfig.argoUri,awConfig.k8Uri);
 
+    outPutList.emplace_back("results","results: extern \"C\" int getResults(mods::ArgoInterface::ArgoWorkfl...");
+
     return 0;
 }

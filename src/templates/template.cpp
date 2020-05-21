@@ -18,6 +18,7 @@
 
 #define X3STRING std::string, std::string, std::string
 #define X2STRING std::string, std::string
+#define X2INPUT std::string, std::unique_ptr<mods::ArgoInterface::tgInput>
 
 class Util {
 public:
@@ -99,7 +100,7 @@ std::string isBoundingBoxData(maps *&_params, std::string postfix) {
   return "";
 }
 
-std::pair<X2STRING> getNodeParameter(maps *&_params) {
+std::pair<X2INPUT> getNodeParameter(maps *&_params) {
   // ZOO puts "NULL" if the value is not present... i want to change in blank
   bool minOccurenceZero = false;
   map *minOcc = getMap(_params->content, "minOccurs");
@@ -107,12 +108,12 @@ std::pair<X2STRING> getNodeParameter(maps *&_params) {
     minOccurenceZero = !strcmp(minOcc->value, "0");
   }
 
-  auto param = std::make_pair<X2STRING>("", "");
+  auto param = std::make_pair<X2INPUT>("", nullptr);
 
   param.first = _params->name;
-  param.second = "";
+  param.second = std::make_unique<mods::ArgoInterface::tgInput>();
+  param.second->id=_params->name;
 
-  // map* content = CICORIA->content;
   map *isArray = getMap(_params->content, "isArray");
   if (isArray) {
     int len = 0;
@@ -136,16 +137,20 @@ std::pair<X2STRING> getNodeParameter(maps *&_params) {
           auto bb = isBoundingBoxData(_params, postFix);
           if (i > 0) {
             if (bb.empty()) {
-              param.second.append(",");
+              if(param.second)
+                param.second->value.append(",");
             } else {
-              param.second.append("\n");
+              if(param.second)
+                param.second->value.append("\n");
             }
           }
 
           if (bb.empty()) {
-            param.second.append(value->value);
+            if(param.second)
+              param.second->value.append(value->value);
           } else {
-            param.second.append(bb);
+            if(param.second)
+              param.second->value.append(bb);
           }
         }
       }
@@ -157,30 +162,40 @@ std::pair<X2STRING> getNodeParameter(maps *&_params) {
         if (strcmp(value->value, "NULL")) {
           auto bb = isBoundingBoxData(_params, "");
           if (bb.empty())
-            param.second = value->value;
+            if(param.second)
+              param.second->value = value->value;
           else {
-            param.second = bb;
+              if(param.second)
+                param.second->value = bb;
           }
         }
       } else {
         auto bb = isBoundingBoxData(_params, "");
         if (bb.empty())
-          param.second = value->value;
+          if(param.second)
+            param.second->value = value->value;
         else {
-          param.second = bb;
+            if(param.second)
+              param.second->value = bb;
         }
       }
     }
   }
 
+  map *mimeType = getMap(_params->content, "mimeType");
+  if(mimeType){
+    if(param.second)
+      param.second->mimeType=mimeType->value;
+  }
+
   return param;
 }
 
-void getT2InputCong(maps *m, std::list<std::pair<X2STRING>> &input) {
+void getT2InputConf(maps *m, std::list<std::pair<X2INPUT>> &input) {
   maps *tmp = m;
   while (tmp != NULL) {
     input.push_back(getNodeParameter(tmp));
-    getT2InputCong(tmp->child, input);
+    getT2InputConf(tmp->child, input);
     tmp = tmp->next;
   }
 }
@@ -206,8 +221,12 @@ void getConfigurationFromZooMapConfig(
   }
 }
 
-void setStatus(maps *&conf, const char *status, const char *message) {
+void log(const char* log){
+  fprintf(stderr, "%s\n", log);
+  fflush(stderr);
+}
 
+void setStatus(maps *&conf, const char *status, const char *message) {
   map *usid = getMapFromMaps(conf, "lenv", "uusid");
   map *r_inputs = NULL;
   r_inputs = getMapFromMaps(conf, "main", "tmpPath");
@@ -228,21 +247,6 @@ extern "C" {
 ZOO_DLL_EXPORT int SERVICENAME(maps *&conf, maps *&inputs, maps *&outputs) {
 
   try {
-
-///*
-//    ----------------INI
-//    MAP => [input_file]
-//    * CONTENT [input_file]
-//        ----------------VALUE
-//    value: (http://ssssssssssss)
-//    mimeType: (application/json)
-//    inRequest: (true)
-//      ----------------END
-//        * CHILD [input_file]*/
-//    MEdumpMaps(inputs);
-//    setStatus(conf, "successful", "");
-//    return SERVICE_SUCCEEDED;
-
 
     setStatus(conf, "running", "");
 
@@ -283,9 +287,7 @@ ZOO_DLL_EXPORT int SERVICENAME(maps *&conf, maps *&inputs, maps *&outputs) {
         std::make_unique<mods::ArgoInterface>(confEoepca["libargo"]);
 
     if (!argoInterface->IsValid()) {
-
       fflush(stderr);
-
       std::string err("The library ");
       err.append(confEoepca["libargo"]);
       err.append(" is not valid!");
@@ -295,8 +297,19 @@ ZOO_DLL_EXPORT int SERVICENAME(maps *&conf, maps *&inputs, maps *&outputs) {
     //==================================GET CONFIGURATION
 
     //==================================GET PARAMETERS
-    std::list<std::pair<X2STRING>> inputParam;
-    getT2InputCong(inputs, inputParam);
+    std::list<std::pair<X2INPUT>> inputParam;
+    getT2InputConf(inputs, inputParam);
+
+    MEdumpMaps(inputs);
+    for(auto&a:inputParam){
+        std::cerr << a.first << " " << a.second->id << " " << a.second->value<< " " << a.second->mimeType << "\n";
+    }
+
+//    setStatus(conf, "successful", "");
+//    setMapInMaps(outputs, "results", "value", "theResults");
+//    return SERVICE_SUCCEEDED;
+
+
     //==================================GET PARAMETERS
 
     //==================================GET CWL CONTENT
@@ -317,32 +330,32 @@ ZOO_DLL_EXPORT int SERVICENAME(maps *&conf, maps *&inputs, maps *&outputs) {
 
     setStatus(conf, "running", "the service is started");
     std::string argoWorkflowId("");
-//
+
 //    argoInterface->start(*argoConfig.get(), cwlBuffer.str(), inputParam,
 //                         lenv["Identifier"], lenv["uusid"], argoWorkflowId);
-//
-//    std::cerr << "start finished" << std::endl;
-//    int percent = 0;
-//    std::string message("");
-//    while (argoInterface->getStatus(*argoConfig.get(), argoWorkflowId, percent,
-//                                    message)) {
-//      updateStatus(conf, percent, message.c_str());
-//      std::cerr << "going to sleep" << std::endl;
-//      sleep(10);
-//    }
-//
-//    std::cerr << "status finished" << std::endl;
-//    updateStatus(conf, 100, "Done");
+
+    std::cerr << "start finished" << std::endl;
+    int percent = 0;
+    std::string message("");
+    while (argoInterface->getStatus(*argoConfig.get(), argoWorkflowId, percent,
+                                    message)) {
+      updateStatus(conf, percent, message.c_str());
+      std::cerr << "going to sleep" << std::endl;
+      sleep(10);
+    }
+
+    std::cerr << "status finished" << std::endl;
+    updateStatus(conf, 100, "Done");
 //    sleep(20);
-//
-//    std::list<std::pair<std::string, std::string>> outPutList{};
-//    std::cerr << "getresult " << argoWorkflowId << std::endl;
-//    argoInterface->getResults(*argoConfig.get(), argoWorkflowId, outPutList);
-//    std::cerr << "getresults finished" << std::endl;
-//    for (auto &[k, p] : outPutList) {
-//      std::cerr << "output" << p << " " << k << std::endl;
-//      setMapInMaps(outputs, k.c_str(), "value", p.c_str());
-//    }
+
+    std::list<std::pair<std::string, std::string>> outPutList{};
+    std::cerr << "getresult " << argoWorkflowId << std::endl;
+    argoInterface->getResults(*argoConfig.get(), argoWorkflowId, outPutList);
+    std::cerr << "getresults finished" << std::endl;
+    for (auto &[k, p] : outPutList) {
+      std::cerr << "output" << p << " " << k << std::endl;
+      setMapInMaps(outputs, k.c_str(), "value", p.c_str());
+    }
     std::cerr << "mapping results" << std::endl;
 
     //  - accepted
