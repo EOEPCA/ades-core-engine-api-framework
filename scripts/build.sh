@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-rm -fvR build zooservice
+#rm -fvR build zooservice
 
 if [ -z "${BUILDER_DOCKERIMAGE}" ]; then
   BUILDER_DOCKERIMAGE='eoepca/eoepca-build-cpp:1.0'
@@ -22,7 +22,8 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaows eoepcaargo sources argo_interface
+docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make argo_interface ades_main
+#docker run --rm -ti -v $PWD:/project/ -w /project/build/ ${BUILDER_DOCKERIMAGE} make eoepcaows eoepcaargo sources argo_interface ades_main
 if [ $? -ne 0 ]; then
   echo "make eoepcaargo failed"
   exit 2
