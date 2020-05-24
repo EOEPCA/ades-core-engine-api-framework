@@ -74,8 +74,10 @@ extern "C" int start(mods::ArgoInterface::ArgoWorkflowConfig &awConfig, const st
     std::unique_ptr<proc_comm_lib_argo::NodeTemplate> stageOutApplication = std::make_unique<proc_comm_lib_argo::NodeTemplate>();
     stageOutApplication->setDockerImage("blasco/eoepca-eo-tools");
     stageOutApplication->setUseShell(true);
-    stageOutApplication->setCommand("cat");
+    stageOutApplication->setCommand("echo");
+    stageOutApplication->setIncludeTee(true);
 
+    application->setPostProcessingNode(stageOutApplication);
 
     // temporary hardcoded
     std::map<std::string, std::string> volume;

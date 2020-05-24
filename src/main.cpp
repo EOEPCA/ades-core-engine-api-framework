@@ -68,7 +68,6 @@ int main(int a, char **b) {
 
     std::cout << "argoWorkflowId: " << argoWorkflowId << std::endl;
 
-    argoWorkflowId += "123";
     int percent = 0;
     std::string message("Running");
 
