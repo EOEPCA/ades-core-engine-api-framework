@@ -366,10 +366,12 @@ ZOO_DLL_EXPORT int interface(maps *&conf, maps *&inputs, maps *&outputs) {
 
   } catch (std::runtime_error &err) {
 
+    updateStatus(conf, 100, "Done");
     setStatus(conf, "failed", err.what());
     return SERVICE_FAILED;
 
   } catch (...) {
+    updateStatus(conf, 100, "Done");
     setStatus(conf, "failed", "Error undefined");
     return SERVICE_FAILED;
   }
