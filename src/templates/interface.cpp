@@ -334,6 +334,7 @@ ZOO_DLL_EXPORT int interface(maps *&conf, maps *&inputs, maps *&outputs) {
     std::cerr << "start finished" << std::endl;
     int percent = 0;
     std::string message("");
+    std::cerr << "getStats start" << std::endl;
     while (argoInterface->getStatus(*argoConfig.get(), argoWorkflowId, percent,
                                     message)) {
       updateStatus(conf, percent, message.c_str());
