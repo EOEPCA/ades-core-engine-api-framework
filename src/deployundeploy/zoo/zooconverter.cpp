@@ -133,22 +133,7 @@ parseParam<EOEPCA::OWS::ComplexData>(EOEPCA::OWS::ComplexData *param) {
 
   os << "\t<ComplexData>\n";
 
-  if (!param->getSupported().empty()) {
-    for (auto &supp : param->getSupported()) {
-      os << "\t\t<Supported>\n";
 
-      if (!supp->getMimeType().empty())
-        os << "\t\t\tmimeType = " << supp->getMimeType() << "\n";
-
-      if (!supp->getEncoding().empty())
-        os << "\t\t\tencoding = " << supp->getEncoding() << "\n";
-
-      if (!supp->getSchema().empty())
-        os << "\t\t\tschema =   " << supp->getSchema() << "\n";
-
-      os << "\t\t</Supported>\n";
-    }
-  }
 
   if (param->getDefaultSupported()) {
     os << "\t\t<Default>\n";
@@ -169,6 +154,24 @@ parseParam<EOEPCA::OWS::ComplexData>(EOEPCA::OWS::ComplexData *param) {
   } else {
     os << "\t\t<Default>\n\t\t</Default>\n";
   }
+
+  if (!param->getSupported().empty()) {
+    for (auto &supp : param->getSupported()) {
+      os << "\t\t<Supported>\n";
+
+      if (!supp->getMimeType().empty())
+        os << "\t\t\tmimeType = " << supp->getMimeType() << "\n";
+
+      if (!supp->getEncoding().empty())
+        os << "\t\t\tencoding = " << supp->getEncoding() << "\n";
+
+      if (!supp->getSchema().empty())
+        os << "\t\t\tschema =   " << supp->getSchema() << "\n";
+
+      os << "\t\t</Supported>\n";
+    }
+  }
+
 
   os << "\t</ComplexData>\n";
 
