@@ -344,7 +344,7 @@ ZOO_DLL_EXPORT int interface(maps *&conf, maps *&inputs, maps *&outputs) {
 
     std::cerr << "status finished" << std::endl;
     updateStatus(conf, 100, "Done");
-    //    sleep(20);
+    sleep(40);
 
     std::list<std::pair<std::string, std::string>> outPutList{};
     std::cerr << "getresult " << argoWorkflowId << std::endl;
