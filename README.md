@@ -181,9 +181,9 @@ curl -L  "http://localhost:7777/zoo/?service=WPS&version=1.0.0&request=GetCapabi
   </ows:OperationsMetadata>
   <wps:ProcessOfferings>
     <wps:Process wps:processVersion="1.0.0">
-      <ows:Identifier>argo</ows:Identifier>
+      <ows:Identifier>eoepcaadesundeployprocess</ows:Identifier>
       <ows:Title>Eoepca Deploy Process</ows:Title>
-      <ows:Abstract>argo test 1.0</ows:Abstract>
+      <ows:Abstract>This method will undeploy an application encapsulated within a Docker container as a process accessible through the WPS interface.</ows:Abstract>
     </wps:Process>
     <wps:Process wps:processVersion="1">
       <ows:Identifier>longProcess</ows:Identifier>
@@ -196,6 +196,11 @@ curl -L  "http://localhost:7777/zoo/?service=WPS&version=1.0.0&request=GetCapabi
       <ows:Title>Produce an updated ExecuteResponse document. </ows:Title>
       <ows:Abstract>Create an ExecuteResponse document from a sid (Service ID), it will use the niternal ZOO Kernel mechanisms to access the current status from a running Service and update the percentCompleted from the original backup file used by the ZOO Kernel when running a Service in background. </ows:Abstract>
       <ows:Metadata xlink:title="Demo GetStatus request"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="1.0.0">
+      <ows:Identifier>eoepcaadesdeployprocess</ows:Identifier>
+      <ows:Title>Eoepca Deploy Process</ows:Title>
+      <ows:Abstract>This method will deploy an application encapsulated within a Docker container as a process accessible through the WPS interface.</ows:Abstract>
     </wps:Process>
   </wps:ProcessOfferings>
   <wps:Languages>
@@ -220,9 +225,9 @@ curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
 {
   "processes": [
     {
-      "id": "argo",
+      "id": "eoepcaadesundeployprocess",
       "title": "Eoepca Deploy Process",
-      "abstract": "argo test 1.0",
+      "abstract": "This method will undeploy an application encapsulated within a Docker container as a process accessible through the WPS interface.",
       "version": "1.0.0",
       "jobControlOptions": [
         "sync-execute",
@@ -238,7 +243,7 @@ curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
           "rel": "canonical",
           "type": "application/json",
           "title": "Process Description",
-          "href": "/watchjob/processes/argo/"
+          "href": "/watchjob/processes/eoepcaadesundeployprocess/"
         }
       ]
     },
@@ -287,6 +292,29 @@ curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
           "href": "/watchjob/processes/GetStatus/"
         }
       ]
+    },
+    {
+      "id": "eoepcaadesdeployprocess",
+      "title": "Eoepca Deploy Process",
+      "abstract": "This method will deploy an application encapsulated within a Docker container as a process accessible through the WPS interface.",
+      "version": "1.0.0",
+      "jobControlOptions": [
+        "sync-execute",
+        "async-execute",
+        "dismiss"
+      ],
+      "outputTransmission": [
+        "value",
+        "reference"
+      ],
+      "links": [
+        {
+          "rel": "canonical",
+          "type": "application/json",
+          "title": "Process Description",
+          "href": "/watchjob/processes/eoepcaadesdeployprocess/"
+        }
+      ]
     }
   ]
 }
@@ -319,19 +347,116 @@ with the option `--network host` the port 7777 will be ignored
 curl -s -L "http://localhost/wps3/processes" -H "accept: application/json"
 ```
 
-3) Looking for the our service argo:
+
+3) install the new service
+
+create json file parameter `deploy.json`
+
+```json
+{
+  "inputs": [
+    {
+      "id": "applicationPackage",
+      "input": {
+        "format": {
+          "mimeType": "application/xml"
+        },
+        "value": {
+          "inlineValue": "https://raw.githubusercontent.com/EOEPCA/proc-ades/develop/test/sample_apps/metadata_extractor/ows.xml"
+        }
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "format": {
+        "mimeType": "string",
+        "schema": "string",
+        "encoding": "string"
+      },
+      "id": "deployResult",
+      "transmissionMode": "value"
+    }
+  ],
+  "mode": "async",
+  "response": "raw"
+}
+```
+
+run:
+```shell script
+curl -v -L -X POST "http://localhost:7777/wps3/processes/eoepcaadesdeployprocess/jobs" -H  \
+  "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d@deploy.json
+```
+
+```text
+>   "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d@deploy.json
+* About to connect() to localhost port 7777 (#0)
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 7777 (#0)
+> POST /wps3/processes/eoepcaadesdeployprocess/jobs HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: localhost:7777
+> accept: application/json
+> Prefer: respond-async
+> Content-Type: application/json
+> Content-Length: 543
+>
+* upload completely sent off: 543 out of 543 bytes
+< HTTP/1.1 201 Created
+< Date: Mon, 25 May 2020 14:11:43 GMT
+< Server: Apache/2.4.6 (CentOS)
+< X-Powered-By: ZOO@ZOO-Project
+< Location: /watchjob/processes/eoepcaadesdeployprocess/jobs/a93616e8-9e91-11ea-a71d-0242ac110002
+< Transfer-Encoding: chunked
+< Content-Type: application/json;charset=UTF-8
+<
+* Connection #0 to host localhost left intact
+```
+
+running again the getProcess we can read a new service:
+
+```json
+{
+      "id": "eo_metadata_generation_1_0",
+      "title": "Earth Observation Metadata Generation",
+      "abstract": "Earth Observation Metadata Generation",
+      "version": "1.0.0.0",
+      "jobControlOptions": [
+        "sync-execute",
+        "async-execute",
+        "dismiss"
+      ],
+      "outputTransmission": [
+        "value",
+        "reference"
+      ],
+      "links": [
+        {
+          "rel": "canonical",
+          "type": "application/json",
+          "title": "Process Description",
+          "href": "/watchjob/processes/eo_metadata_generation_1_0/"
+        }
+      ]
+    }
+```
+
+
+
+4) Looking for the our service argo:
  
 ```shell script
-curl -s -L "http://localhost/wps3/processes/argo" -H "accept: application/json"
+curl -s -L "http://localhost/wps3/processes/eo_metadata_generation_1_0" -H "accept: application/json"
 ```
 
 ```json
 {
   "process": {
-    "id": "argo",
-    "title": "Eoepca Deploy Process",
-    "abstract": "argo test 1.0",
-    "version": "1.0.0",
+    "id": "eo_metadata_generation_1_0",
+    "title": "Earth Observation Metadata Generation",
+    "abstract": "Earth Observation Metadata Generation",
+    "version": "1.0.0.0",
     "jobControlOptions": [
       "sync-execute",
       "async-execute",
@@ -346,25 +471,21 @@ curl -s -L "http://localhost/wps3/processes/argo" -H "accept: application/json"
         "rel": "canonical",
         "type": "application/json",
         "title": "Execute End Point",
-        "href": "/watchjob/processes/argo/jobs/"
+        "href": "/watchjob/processes/eo_metadata_generation_1_0/jobs/"
       }
     ],
     "inputs": [
       {
-        "id": "input_string",
-        "title": "The input1",
-        "abstract": "the input_string",
+        "id": "input_file",
+        "title": "EO input file",
+        "abstract": "Mandatory input file to generate metadata for",
         "minOccurs": "1",
-        "maxOccurs": "1",
+        "maxOccurs": "0",
         "input": {
           "formats": [
             {
               "default": true,
-              "mimeType": "application/atom+xml"
-            },
-            {
-              "default": false,
-              "mimeType": "application/atom+xml"
+              "mimeType": "application/json"
             }
           ]
         }
@@ -372,18 +493,18 @@ curl -s -L "http://localhost/wps3/processes/argo" -H "accept: application/json"
     ],
     "outputs": [
       {
-        "id": "result_osd",
-        "title": "OpenSearch Description to the Results",
-        "abstract": "OpenSearch Description to the Results",
+        "id": "results",
+        "title": "Outputs blah blah",
+        "abstract": "results",
         "output": {
-          "formats": [
+          "literalDataDomains": [
             {
-              "default": true,
-              "mimeType": "application/opensearchdescription+xml"
-            },
-            {
-              "default": false,
-              "mimeType": "application/opensearchdescription+xml"
+              "dataType": {
+                "name": "string"
+              },
+              "valueDefinition": {
+                "anyValue": true
+              }
             }
           ]
         }
@@ -396,51 +517,85 @@ curl -s -L "http://localhost/wps3/processes/argo" -H "accept: application/json"
 For this release, "Argo" is only a simple ``echo workflow`` and is defined from CWL file:
 
 ```yaml
-$graph:
-  - baseCommand: echo
-    class: CommandLineTool
-    hints:
-      DockerRequirement:
-        dockerPull: centos:7
-    id: helloworld
-    inputs:
-      arg1:
-        inputBinding:
-          position: 1
-          prefix: --input
-        type: string
-    outputs:
-      results:
-        outputBinding:
-          glob: .
-        type: Any
-    stderr: std.err
-    stdout: std.out
+cwlVersion: v1.0
 
-  - class: Workflow
-    id: helloworld-wf # service id [WPS] map to wps:Input/ows:identifier
-    label: Hello World # title [WPS] map to wps:Input/ows:title
-    doc: Hello World Test Workflow # description [WPS] map to wps:Input/ows:abstract
-    inputs:
-      input_string: # parameter id [WPS] map to wps:Input/ows:identifier
-        doc: string to be echoed # [WPS] maps to wps:Input/ows:abstract
-        label: input string # [WPS] maps to wps:Input/ows:title
-        type: string
-    outputs:
-      results: # parameter id [WPS] map to wps:Output/ows:identifier
-        label: Result string
-        outputSource:
-          - step1/results
-        type:
-          items: Directory
-          type: array
-    steps:
-      step1:
-        in:
-          arg1: input_string
-        out:
-          - results
-        run: '#helloworld'
+$namespaces:
+  ows: http://www.opengis.net/ows/1.1
+  stac: http://www.me.net/stac/cwl/extension
+  opensearch: http://a9.com/-/spec/opensearch/1.1/
+
+$graph:
+- baseCommand: eoepca-metadata-extractor
+  class: CommandLineTool
+  hints:
+    DockerRequirement:
+      dockerPull: blasco/eoepca-eo-tools:latest
+  id: metadata_extractor
+  inputs:
+    arg1:
+    #   inputBinding:
+    #     position: 1
+    #     prefix: --base_dir
+    #     valueFrom: $(self.path)
+      type: Directory
+      default: 
+        class: Directory
+        location: "/workspace"
+    arg2:
+      type: File
+      inputBinding:
+        position: 1
+  outputs:
+    results:
+      outputBinding:
+        glob: .
+      type: Any
+  requirements:
+    EnvVarRequirement:
+      envDef:
+        PATH: /opt/anaconda/bin:/opt/anaconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    ResourceRequirement: {}
+    
+  stderr: std.err
+  stdout: std.out
+- class: Workflow
+  id: eo_metadata_generation # service id [WPS] map to wps:Input/ows:identifier
+  label: Earth Observation Metadata Generation # title [WPS] map to wps:Input/ows:title
+  doc: Earth Observation Metadata Generation # description [WPS] map to wps:Input/ows:abstract
+  ows:version: 1.0 # workflow version
+  inputs:
+    base_dir: 
+      type: Directory? 
+      ows:ignore: True # [WPS] no mapping
+
+    input_file:
+      doc: Mandatory input file to generate metadata for # [WPS] maps to wps:Input/ows:abstract
+      label: EO input file # [WPS] maps to wps:Input/ows:title
+      type: File # no question mark indicates it is not optional. [WPS] maps to minOccurs = 1 (maxOccurs = 1 because it is not an array)
+      # This file can be referenced by a STAC catalog
+      stac:catalog: # [WPS] maps to wps:Supported/wps:Format with mimetype = application/json & application/yaml
+        stac:href: catalog.json # optional catalogue URL. Default to file 'catalog.json'.
+        stac:collection_id: post_event # name of the collection to fetch the input from
+      # This file can be also referenced as an OpenSearch URL
+      opensearch:url: {} # [WPS] maps to wps:Supported/wps:Format with mimetype = application/atom+xml & application/opensearchdescription+xml
+
+  outputs:
+    results: # parameter id [WPS] map to wps:Output/ows:identifier
+      label: Outputs blah blah
+      outputSource:
+      - step1/results
+      type:
+        items: Directory
+        type: array
+
+  steps:
+    step1:
+      in:
+        arg1: base_dir
+        arg2: input_file
+      out:
+      - results
+      run: '#metadata_extractor'
 ```
 
 The parameter file ``argo.json``:
@@ -449,13 +604,13 @@ The parameter file ``argo.json``:
 {
   "inputs": [
     {
-      "id": "input_string",
+      "id": "input_file",
       "input": {
         "format": {
-          "mimeType": "application/xml"
+          "mimeType": "application/json"
         },
         "value": {
-          "inlineValue": "CIAO"
+          "inlineValue": "http://ssssssssssss"
         }
       }
     }
@@ -467,119 +622,51 @@ The parameter file ``argo.json``:
         "schema": "string",
         "encoding": "string"
       },
-      "id": "content",
+      "id": "results",
       "transmissionMode": "value"
     }
   ],
   "mode": "async",
   "response": "raw"
-}
+} 
 ```
 
 Run:
 
 ```shell script
-curl -v -L -X POST "http://localhost/wps3/processes/argo/jobs" -H  \
+curl -v -L -X POST "http://localhost/wps3/processes/eo_metadata_generation_1_0/jobs" -H  \
   "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d@argo.json
 ```
 
 Get Argo Jobs:
 
 ```shell script
-curl  -v  -s -L "http://localhost/wps3/processes/argo/jobs" -H "accept: application/json" 
+curl  -v  -s -L "http://localhost/wps3/processes/eo_metadata_generation_1_0/jobs" -H "accept: application/json" 
 ```
 
 ```json
-[
-  {
-    "id": "ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe",
-    "infos": {
-      "status": "successful",
-      "message": "ZOO-Kernel successfully run your service!",
-      "links": [
-        {
-          "Title": "Status location",
-          "href": "/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe"
-        },
-        {
-          "Title": "Result location",
-          "href": "/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe/result"
-        }
-      ]
-    }
-  },
-  {
-    "id": "d4a4604c-93cd-11ea-b74a-a0c5899f98fe",
-    "infos": {
-      "status": "successful",
-      "message": "ZOO-Kernel failed to run your service!",
-      "links": [
-        {
-          "Title": "Status location",
-          "href": "/watchjob/processes/argo/jobs/d4a4604c-93cd-11ea-b74a-a0c5899f98fe"
-        }
-      ]
-    }
-  },
-  {
-    "id": "31ecd6cc-93cd-11ea-bdf6-a0c5899f98fe",
-    "infos": {
-      "status": "successful",
-      "message": "ZOO-Kernel failed to run your service!",
-      "links": [
-        {
-          "Title": "Status location",
-          "href": "/watchjob/processes/argo/jobs/31ecd6cc-93cd-11ea-bdf6-a0c5899f98fe"
-        }
-      ]
-    }
-  }
-]
+[]
 ```
 
 Get Argo Job ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe:
 
 ```shell script
-curl  -v  -s -L "http://localhost/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe" -H "accept: application/json"
+curl  -v  -s -L "http://localhost/watchjob/processes/argo/jobs/xxxxxxxx" -H "accept: application/json"
 ```
 
 ```json
-{
-  "jobID": "ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe",
-  "status": "successful",
-  "message": "Done",
-  "progress": "100",
-  "links": [
-    {
-      "href": "http://localhost/t2dep//processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe",
-      "rel": "self",
-      "type": "application/json",
-      "title": "get Status"
-    }
-  ]
-}
+[]
 ```
 
 and Get Result
 
 ```shell script
-curl  -v  -s -L "http://localhost/watchjob/processes/argo/jobs/ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe/result" -H "accept: application/json"
+curl  -v  -s -L "http://localhost/watchjob/processes/eo_metadata_generation_1_0/jobs/xxxxx/result" -H "accept: application/json"
 ```
 
 ```json
 {
-  "outputs": [
-    {
-      "id": "content",
-      "value": {
-        "inlineValue": "CIAO"
-      }
-    },
-    {
-      "id": "podName",
-      "value": {}
-    }
-  ]
+ 
 }
 ```
 
