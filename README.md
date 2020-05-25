@@ -327,7 +327,83 @@ curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
 
 - [dev-env-argo](https://github.com/EOEPCA/dev-env-argo)
 - [curl](https://en.wikipedia.org/wiki/CURL)
+- [Kubernetes Persistent Volume and Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/):	
+To share a workspace among the various nodes of the workflow, we need a common filesystem, for this application we will use Kubernetes Persistent Volume. In order to create one, write the file **eoepca-pv-and-pvc.yaml** with the following content:
 
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: eoepca-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: "/mnt/data"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: eoepca-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 3Gi
+```
+and run the following  command:
+```
+ kubectl create -f eoepca-pv-and-pvc.yaml
+```
+
+### The application
+
+#### CWL definition
+The cwl that this sample Ades service runs can be found at the following address:
+[https://github.com/EOEPCA/proc-ades/blob/develop/test/sample_apps/metadata_extractor/workflow.cwl](https://github.com/EOEPCA/proc-ades/blob/develop/test/sample_apps/metadata_extractor/workflow.cwl)
+
+#### Docker Image
+The docker image used in this sample application can be found at the following address:
+[https://hub.docker.com/r/blasco/eoepca-eo-tools](https://hub.docker.com/r/blasco/eoepca-eo-tools)
+
+The image contains the following two scripts necessary to run the workflow: 
+**/usr/bin/stagein**
+```
+#!/bin/bash
+URL=$1
+echo  "retrieving enclosure of $URL"
+enclosure=$(opensearch-client -p count=1 -p do=terradue $URL enclosure)
+
+echo  "Enclosure: $enclosure"
+DOWNLOAD_PATH="/tmp/eoepca"
+mkdir -p $DOWNLOAD_PATH
+
+echo  "Downloading product to $DOWNLOAD_PATH"
+path=$(ciop-copy $enclosure -O $DOWNLOAD_PATH)
+
+echo  "Downloaded to $path"
+echo  $path >> /tmp/output.txt
+```
+
+**process_s3_metadata**
+```
+#!/bin/bash
+
+metadata-extractor -p --format=atom -m SENTINEL3 $1 > /tmp/eopca/s3_metadata.atom
+mkdir /tmp/eoepca
+echo  "/tmp/eopca/s3_metadata.atom"
+```
 
 ### Start
 
@@ -486,6 +562,22 @@ curl -s -L "http://localhost/wps3/processes/eo_metadata_generation_1_0" -H "acce
             {
               "default": true,
               "mimeType": "application/json"
+            },
+            {
+              "default": false,
+              "mimeType": "application/json"
+            },
+            {
+              "default": false,
+              "mimeType": "application/yaml"
+            },
+            {
+              "default": false,
+              "mimeType": "application/atom+xml"
+            },
+            {
+              "default": false,
+              "mimeType": "application/opensearchdescription+xml"
             }
           ]
         }
@@ -512,6 +604,7 @@ curl -s -L "http://localhost/wps3/processes/eo_metadata_generation_1_0" -H "acce
     ]
   }
 }
+
 ```
 
 For this release, "Argo" is only a simple ``echo workflow`` and is defined from CWL file:
@@ -610,7 +703,7 @@ The parameter file ``argo.json``:
           "mimeType": "application/json"
         },
         "value": {
-          "inlineValue": "http://ssssssssssss"
+          "inlineValue": "https://catalog.terradue.com/sentinel3/search?uid=S3B_SL_1_RBT____20200520T050759_20200520T051059_20200520T060015_0179_039_105_0360_LN2_O_NR_004"
         }
       }
     }
@@ -644,30 +737,111 @@ Get Argo Jobs:
 curl  -v  -s -L "http://localhost/wps3/processes/eo_metadata_generation_1_0/jobs" -H "accept: application/json" 
 ```
 
-```json
-[]
-```
+```text
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> GET /wps3/processes/eo_metadata_generation_1_0/jobs HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.58.0
+> accept: application/json
+> 
+< HTTP/1.1 200 OK 
+< Date: Mon, 25 May 2020 15:53:53 GMT
+< Server: Apache/2.4.6 (CentOS)
+< X-Powered-By: ZOO@ZOO-Project
+< Transfer-Encoding: chunked
+< Content-Type: application/json;charset=UTF-8
+< 
+{ [421 bytes data]
+* Connection #0 to host localhost left intact
+[
+  {
+    "id": "06223bbe-9e9e-11ea-8f64-a0c5899f98fe",
+    "infos": {
+      "status": "successful",
+      "message": "ZOO-Kernel successfully run your service!",
+      "links": [
+        {
+          "Title": "Status location",
+          "href": "/watchjob/processes/eo_metadata_generation_1_0/jobs/06223bbe-9e9e-11ea-8f64-a0c5899f98fe"
+        },
+        {
+          "Title": "Result location",
+          "href": "/watchjob/processes/eo_metadata_generation_1_0/jobs/06223bbe-9e9e-11ea-8f64-a0c5899f98fe/result"
+        }
+      ]
+    }
+  }
+]
 
-Get Argo Job ce9ea3f4-93cf-11ea-bcd7-a0c5899f98fe:
-
-```shell script
-curl  -v  -s -L "http://localhost/watchjob/processes/argo/jobs/xxxxxxxx" -H "accept: application/json"
-```
-
-```json
-[]
 ```
 
 and Get Result
 
 ```shell script
-curl  -v  -s -L "http://localhost/watchjob/processes/eo_metadata_generation_1_0/jobs/xxxxx/result" -H "accept: application/json"
+curl  -v  -s -L "http://localhost/watchjob/processes/eo_metadata_generation_1_0/jobs/06223bbe-9e9e-11ea-8f64-a0c5899f98fe/result" -H "accept: application/json"
 ```
 
-```json
+```text
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> GET /watchjob/processes/eo_metadata_generation_1_0/jobs/06223bbe-9e9e-11ea-8f64-a0c5899f98fe/result HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.58.0
+> accept: application/json
+> 
+< HTTP/1.1 200 OK
+< Date: Mon, 25 May 2020 15:46:09 GMT
+< Server: Apache/2.4.6 (CentOS)
+< Transfer-Encoding: chunked
+< Content-Type: application/json;charset=UTF-8
+< 
+{ [178 bytes data]
+* Connection #0 to host localhost left intact
 {
- 
+  "outputs": [
+    {
+      "id": "results",
+      "value": {
+        "inlineValue": "/tmp/eoepca/S3B_SL_1_RBT____20200520T050759_20200520T051059_20200520T060015_0179_039_105_0360_LN2_O_NR_004.atom"
+      }
+    }
+  ]
 }
+
+```
+
+To browse the result we will mount the persistent volume on a pod and access it.
+Write the following pod specifications in a file named **shell-demo.yaml** :
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shell-demo
+spec:
+  volumes:
+  - name: workdir
+    persistentVolumeClaim:
+       claimName: eoepca-pvc
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: workdir
+      mountPath: /tmp/eoepca
+  hostNetwork: true
+  dnsPolicy: Default
+```
+Create the pod with the following command
+```
+kubectl apply -f shell-demo.yam
+```
+Access the pod and navigate to the result path
+```
+kubectl exec -it shell-demo -- /bin/bash
+root@minikube:/# ls /tmp/eoepca/S3B_SL_1_RBT____20200520T050759_20200520T051059_20200520T060015_0179_039_105_0360_LN2_O_NR_004.atom
 ```
 
 ## Contributing
