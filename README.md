@@ -461,7 +461,7 @@ create json file parameter `deploy.json`
 
 run:
 ```shell script
-curl -v -L -X POST "http://localhost:7777/wps3/processes/eoepcaadesdeployprocess/jobs" -H  \
+curl -v -L -X POST "http://localhost/wps3/processes/eoepcaadesdeployprocess/jobs" -H  \
   "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d@deploy.json
 ```
 
