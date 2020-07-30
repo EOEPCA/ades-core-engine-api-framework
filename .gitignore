@@ -34,5 +34,6 @@
 cmake-build-debug/
 build
 
+.vscode
 .idea/
 /3ty/proc-comm-lib-cwl/.idea/
